@@ -90,6 +90,7 @@ def extract_info(url: str) -> VideoMetadata:
         'socket_timeout': 15,
         'user_agent': USER_AGENT,
         'http_headers': {'User-Agent': USER_AGENT},
+        'extractor_args': {'youtube': {'player_client': ['visionos', 'ios', 'web_creator', 'mweb', 'web']}},
         'js_runtimes': {'node': {}},
     }
     if os.path.exists(COOKIE_FILE) and os.path.getsize(COOKIE_FILE) > 10:
@@ -102,7 +103,7 @@ def extract_info(url: str) -> VideoMetadata:
     except Exception as e:
         err_str = str(e)
         logger.warning(f"Default extraction error: {err_str}. Trying fallback player clients...")
-        for clients in [['tv'], ['ios', 'tv'], ['mweb', 'web_creator']]:
+        for clients in [['visionos'], ['ios'], ['tv'], ['mweb', 'web_creator'], ['android']]:
             try:
                 fallback_opts = dict(ydl_opts)
                 fallback_opts.pop('cookiefile', None)
@@ -275,6 +276,7 @@ def execute_download(task_id: str, req: DownloadRequest):
         'socket_timeout': 20,
         'user_agent': USER_AGENT,
         'http_headers': {'User-Agent': USER_AGENT},
+        'extractor_args': {'youtube': {'player_client': ['visionos', 'ios', 'web_creator', 'mweb', 'web']}},
         'merge_output_format': req.merge_output_format if not req.audio_only else None,
         'writesubtitles': req.embed_subtitles,
         'writeautomaticsub': req.embed_subtitles,
