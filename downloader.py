@@ -77,7 +77,7 @@ def clean_url(url: str) -> str:
                 return f"https://www.youtube.com/watch?v={video_id}"
     except Exception:
         pass
-``    return url.strip()
+    return url.strip()
 
 def get_active_cookie_file() -> Optional[str]:
     if os.path.exists(COOKIE_FILE) and os.path.getsize(COOKIE_FILE) > 10:
