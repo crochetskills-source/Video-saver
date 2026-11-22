@@ -2,303 +2,406 @@
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>yt-dlp Pro — Media Downloader & Processor</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>SnapTube Pro — Universal Video & Music Downloader</title>
+  
+  <!-- PWA & Mobile Web App Meta Tags -->
+  <meta name="theme-color" content="#FFB800">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SnapTube">
+  <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/static/icon-192.png">
+  <link rel="manifest" href="/manifest.json">
+
+  <!-- Tailwind CSS & FontAwesome -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
           colors: {
-            brand: '#FF0033',
-            brandDark: '#CC0029',
-            darkBg: '#0F0F12',
-            darkCard: '#18181F',
-            darkBorder: '#272733'
+            snapGold: '#FFB800',
+            snapGoldHover: '#E5A500',
+            snapDark: '#0E0E13',
+            snapCard: '#181822',
+            snapCardHover: '#20202E',
+            snapBorder: '#272738'
           }
         }
       }
     }
   </script>
+  
   <style>
-    body { background-color: #0F0F12; color: #EEEEEE; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
-    .glass { background: rgba(24, 24, 31, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
-    .pulse-glow { animation: pulseGlow 2s infinite; }
-    @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 15px rgba(255, 0, 51, 0.4); } 50% { box-shadow: 0 0 25px rgba(255, 0, 51, 0.7); } }
+    body {
+      background-color: #0E0E13;
+      color: #EEEEEE;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      padding-bottom: calc(75px + env(safe-area-inset-bottom));
+    }
+    .glass {
+      background: rgba(24, 24, 34, 0.92);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .gold-glow {
+      box-shadow: 0 0 20px rgba(255, 184, 0, 0.35);
+    }
+    .gold-glow:hover {
+      box-shadow: 0 0 30px rgba(255, 184, 0, 0.55);
+    }
+    /* Safe area insets for iPhone notch and bottom home bar */
+    .safe-top { padding-top: env(safe-area-inset-top); }
+    .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
   </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased">
+<body class="min-h-screen flex flex-col antialiased selection:bg-snapGold selection:text-black">
 
-  <!-- Header -->
-  <header class="glass sticky top-0 z-50 px-4 py-3 sm:px-6 sm:py-4 border-b border-darkBorder">
-    <div class="max-w-6xl mx-auto flex items-center justify-between">
-      <div class="flex items-center space-x-2.5 sm:space-x-3">
-        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-brand flex items-center justify-center text-white font-bold text-lg sm:text-xl shadow-lg shadow-brand/30 shrink-0">
-          <i class="fa-solid fa-play"></i>
+  <!-- SnapTube Top Header -->
+  <header class="glass sticky top-0 z-50 px-4 py-3 sm:px-6 sm:py-3.5 border-b border-snapBorder safe-top">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center space-x-2.5 sm:space-x-3 cursor-pointer" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-snapGold flex items-center justify-center text-black font-extrabold text-lg sm:text-xl shadow-lg gold-glow shrink-0">
+          <i class="fa-solid fa-arrow-down"></i>
         </div>
         <div>
-          <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-1.5 sm:gap-2">
-            yt-dlp <span class="text-[10px] sm:text-xs bg-brand text-white px-1.5 py-0.5 rounded-full font-semibold">PRO</span>
-          </h1>
-          <p class="hidden sm:block text-xs text-gray-400">Full FFmpeg Stream Merging & Post-Processing</p>
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <h1 class="text-lg sm:text-xl font-black tracking-tight text-white">SnapTube</h1>
+            <span class="text-[10px] sm:text-xs bg-snapGold text-black font-black px-1.5 py-0.5 rounded uppercase tracking-wide">PRO</span>
+          </div>
+          <p class="text-[11px] text-gray-400 hidden sm:block">Fast Video & Music Downloader • No Ads • No Expiry</p>
         </div>
       </div>
+
+      <!-- Action items -->
       <div class="flex items-center space-x-2 sm:space-x-3">
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 whitespace-nowrap">
+        <button id="pwaInstallBtn" class="hidden text-xs bg-snapCard hover:bg-snapCardHover border border-snapGold/40 text-snapGold px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-mobile-screen"></i>
+          <span>Install App</span>
+        </button>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span class="hidden xs:inline">Server </span>Online
+          <span>Online</span>
         </span>
-        <a href="https://github.com/crochetskills-source/Video-saver" target="_blank" class="text-gray-400 hover:text-white transition text-lg px-1">
-          <i class="fa-brands fa-github"></i>
-        </a>
       </div>
+
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="flex-grow max-w-5xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-8 space-y-6 sm:space-y-8">
+  <!-- Main Container -->
+  <main class="flex-grow max-w-5xl w-full mx-auto px-3.5 sm:px-6 py-4 sm:py-6 space-y-5 sm:space-y-6">
 
-    <!-- Search Input Hero -->
-    <div class="glass p-4 sm:p-6 md:p-8 rounded-2xl shadow-xl">
-      <div class="text-center max-w-2xl mx-auto mb-4 sm:mb-6">
-        <h2 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-1.5 sm:mb-2">Universal Media Downloader</h2>
-        <p class="text-gray-400 text-xs sm:text-sm">Download from YouTube, Twitter/X, TikTok, Instagram, Reddit & 1000+ sites at maximum quality.</p>
+    <!-- Supported Platforms Carousel (Like SnapTube Mobile Home) -->
+    <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 text-xs text-gray-300">
+      <span class="text-gray-500 text-[11px] font-bold uppercase tracking-wider shrink-0 mr-1">Supported:</span>
+      <span class="px-2.5 py-1 rounded-full bg-snapCard border border-snapBorder flex items-center gap-1.5 shrink-0"><i class="fa-brands fa-youtube text-red-500"></i> YouTube</span>
+      <span class="px-2.5 py-1 rounded-full bg-snapCard border border-snapBorder flex items-center gap-1.5 shrink-0"><i class="fa-brands fa-tiktok text-white"></i> TikTok</span>
+      <span class="px-2.5 py-1 rounded-full bg-snapCard border border-snapBorder flex items-center gap-1.5 shrink-0"><i class="fa-brands fa-instagram text-pink-500"></i> Instagram</span>
+      <span class="px-2.5 py-1 rounded-full bg-snapCard border border-snapBorder flex items-center gap-1.5 shrink-0"><i class="fa-brands fa-facebook text-blue-500"></i> Facebook</span>
+      <span class="px-2.5 py-1 rounded-full bg-snapCard border border-snapBorder flex items-center gap-1.5 shrink-0"><i class="fa-brands fa-x-twitter text-gray-300"></i> X / Twitter</span>
+      <span class="px-2.5 py-1 rounded-full bg-snapCard border border-snapBorder flex items-center gap-1.5 shrink-0"><i class="fa-brands fa-soundcloud text-orange-500"></i> SoundCloud</span>
+      <span class="px-2.5 py-1 rounded-full bg-snapCard border border-snapBorder flex items-center gap-1.5 shrink-0"><i class="fa-solid fa-globe text-emerald-400"></i> 1000+ Sites</span>
+    </div>
+
+    <!-- Search / URL Input Box -->
+    <div class="glass p-4 sm:p-6 rounded-2xl shadow-xl space-y-3">
+      <div class="text-left">
+        <h2 class="text-base sm:text-xl font-extrabold text-white">Paste Media Link</h2>
+        <p class="text-gray-400 text-xs mt-0.5">Enter any video or music URL to extract high-speed download links.</p>
       </div>
 
-      <div class="flex flex-col sm:flex-row gap-2.5 sm:gap-3">
+      <div class="flex flex-col sm:flex-row gap-2.5">
         <div class="relative flex-grow">
-          <i class="fa-solid fa-link absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+          <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
           <input
             id="urlInput"
             type="url"
-            placeholder="Paste media link here..."
-            class="w-full pl-10 pr-20 sm:pr-24 py-3 sm:py-3.5 rounded-xl bg-darkCard border border-darkBorder focus:border-brand focus:ring-1 focus:ring-brand focus:outline-none text-white text-sm"
+            placeholder="https://www.youtube.com/watch?v=..."
+            class="w-full pl-10 pr-24 py-3 sm:py-3.5 rounded-xl bg-snapDark border border-snapBorder focus:border-snapGold focus:ring-1 focus:ring-snapGold focus:outline-none text-white text-sm"
           />
           <button
             id="pasteBtn"
-            class="absolute right-2 top-1/2 -translate-y-1/2 px-2.5 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs text-gray-300 font-medium transition"
+            class="absolute right-2 top-1/2 -translate-y-1/2 px-2.5 py-1.5 rounded-lg bg-snapCard hover:bg-snapCardHover text-xs text-snapGold font-bold transition flex items-center gap-1"
           >
-            <i class="fa-regular fa-clipboard mr-1"></i> Paste
+            <i class="fa-regular fa-clipboard"></i>
+            <span>Paste</span>
           </button>
         </div>
+
         <button
           id="fetchBtn"
-          class="w-full sm:w-auto px-6 py-3 sm:py-3.5 rounded-xl bg-brand hover:bg-brandDark font-semibold text-white text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-brand/25 min-w-[130px]"
+          class="w-full sm:w-auto px-6 py-3 sm:py-3.5 rounded-xl bg-snapGold hover:bg-snapGoldHover font-black text-black text-sm transition flex items-center justify-center gap-2 shadow-lg gold-glow shrink-0 min-w-[130px]"
         >
-          <i class="fa-solid fa-wand-magic-sparkles"></i>
-          <span>Analyze</span>
+          <i class="fa-solid fa-arrow-down"></i>
+          <span>Download</span>
         </button>
       </div>
 
       <!-- Error notification -->
-      <div id="errorAlert" class="hidden mt-3 sm:mt-4 p-3 sm:p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs sm:text-sm flex items-start gap-2.5">
-        <i class="fa-solid fa-circle-exclamation mt-0.5 text-sm sm:text-base shrink-0"></i>
+      <div id="errorAlert" class="hidden p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs sm:text-sm flex items-start gap-2.5">
+        <i class="fa-solid fa-circle-exclamation mt-0.5 text-base shrink-0"></i>
         <div id="errorMessage" class="break-words"></div>
       </div>
     </div>
 
-    <!-- Media Inspector & Download Config -->
-    <div id="mediaDetailsCard" class="hidden glass rounded-2xl overflow-hidden shadow-2xl transition-all duration-300">
+    <!-- SnapTube Resolution Selector Sheet (Opens on Analyze) -->
+    <div id="mediaDetailsCard" class="hidden glass rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 border border-snapBorder">
       
       <!-- Video Metadata Header -->
-      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 p-4 sm:p-6 border-b border-darkBorder bg-black/20">
-        <div class="md:col-span-5 relative group rounded-xl overflow-hidden shadow-md aspect-video bg-black/50">
+      <div class="flex flex-col sm:flex-row gap-3.5 sm:gap-4 p-4 sm:p-5 border-b border-snapBorder bg-black/40">
+        <div class="relative rounded-xl overflow-hidden shadow-md aspect-video sm:w-48 bg-black/60 shrink-0">
           <img id="mediaThumbnail" src="" alt="Thumbnail" class="w-full h-full object-cover">
-          <div id="mediaDuration" class="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/80 font-mono text-[11px] sm:text-xs text-white"></div>
+          <div id="mediaDuration" class="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded bg-black/80 font-mono text-[10px] text-white"></div>
         </div>
-        <div class="md:col-span-7 flex flex-col justify-between">
+        <div class="flex flex-col justify-between overflow-hidden">
           <div>
-            <h3 id="mediaTitle" class="text-base sm:text-lg md:text-xl font-bold text-white leading-snug line-clamp-2 mb-2"></h3>
-            <div class="flex flex-wrap items-center gap-2.5 sm:gap-3 text-xs text-gray-400 mb-2">
-              <span id="mediaUploader" class="flex items-center gap-1.5 font-medium text-gray-300 truncate max-w-[200px]">
-                <i class="fa-solid fa-user-circle"></i> <span></span>
+            <h3 id="mediaTitle" class="text-sm sm:text-base font-bold text-white leading-snug line-clamp-2 mb-1.5"></h3>
+            <div class="flex flex-wrap items-center gap-2.5 text-xs text-gray-400">
+              <span id="mediaUploader" class="flex items-center gap-1 text-gray-300 font-medium truncate max-w-[200px]">
+                <i class="fa-solid fa-circle-user text-snapGold"></i> <span></span>
               </span>
-              <span id="mediaViews" class="flex items-center gap-1.5">
-                <i class="fa-solid fa-eye"></i> <span></span>
+              <span id="mediaViews" class="flex items-center gap-1">
+                <i class="fa-solid fa-eye text-gray-400"></i> <span></span>
               </span>
             </div>
           </div>
-          <div class="text-[11px] sm:text-xs text-gray-500 truncate mt-2" id="mediaUrl"></div>
+          <p class="text-[11px] text-emerald-400 font-semibold mt-2 flex items-center gap-1.5">
+            <i class="fa-solid fa-circle-check"></i> Choose resolution below to start instant download!
+          </p>
         </div>
       </div>
 
-      <!-- Config Options Body -->
-      <div class="p-4 sm:p-6 space-y-5 sm:space-y-6">
+      <!-- Format Selection Area -->
+      <div class="p-4 sm:p-6 space-y-6">
 
-        <!-- Mode Tabs: Video vs Audio vs Advanced -->
-        <div class="flex border-b border-darkBorder space-x-4 sm:space-x-6 text-xs sm:text-sm font-semibold overflow-x-auto">
-          <button id="tabVideo" class="tab-btn pb-2.5 sm:pb-3 text-brand border-b-2 border-brand flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
-            <i class="fa-solid fa-video"></i> Video (Merged)
-          </button>
-          <button id="tabAudio" class="tab-btn pb-2.5 sm:pb-3 text-gray-400 hover:text-white border-b-2 border-transparent flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
-            <i class="fa-solid fa-music"></i> Audio Only
-          </button>
-          <button id="tabAdvanced" class="tab-btn pb-2.5 sm:pb-3 text-gray-400 hover:text-white border-b-2 border-transparent flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
-            <i class="fa-solid fa-sliders"></i> Advanced Format
-          </button>
-        </div>
-
-        <!-- 1. Video Options -->
-        <div id="videoOptionsPanel" class="space-y-3.5 sm:space-y-4">
-          <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider">Select Video Quality (Merged with Best Audio)</label>
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">
-            <label class="preset-card cursor-pointer p-3 sm:p-3.5 rounded-xl border border-brand bg-brand/10 text-white flex flex-col justify-between transition">
-              <input type="radio" name="videoPreset" value="bestvideo*+bestaudio/best" checked class="hidden">
-              <span class="font-bold text-sm">Best Available</span>
-              <span class="text-xs text-gray-400">Max 4K / 8K HDR 60fps</span>
-            </label>
-            <label class="preset-card cursor-pointer p-3 sm:p-3.5 rounded-xl border border-darkBorder bg-darkCard hover:border-gray-500 text-gray-300 flex flex-col justify-between transition">
-              <input type="radio" name="videoPreset" value="bestvideo[height<=1080]+bestaudio/best[height<=1080]" class="hidden">
-              <span class="font-bold text-sm">1080p Full HD</span>
-              <span class="text-xs text-gray-400">High Definition</span>
-            </label>
-            <label class="preset-card cursor-pointer p-3 sm:p-3.5 rounded-xl border border-darkBorder bg-darkCard hover:border-gray-500 text-gray-300 flex flex-col justify-between transition">
-              <input type="radio" name="videoPreset" value="bestvideo[height<=720]+bestaudio/best[height<=720]" class="hidden">
-              <span class="font-bold text-sm">720p HD</span>
-              <span class="text-xs text-gray-400">Standard HD</span>
-            </label>
-            <label class="preset-card cursor-pointer p-3 sm:p-3.5 rounded-xl border border-darkBorder bg-darkCard hover:border-gray-500 text-gray-300 flex flex-col justify-between transition">
-              <input type="radio" name="videoPreset" value="bestvideo[height<=480]+bestaudio/best[height<=480]" class="hidden">
-              <span class="font-bold text-sm">480p SD</span>
-              <span class="text-xs text-gray-400">Compact Size</span>
-            </label>
-          </div>
-
-          <div class="flex flex-wrap items-center gap-3 pt-1 sm:pt-2">
-            <span class="text-xs font-semibold text-gray-400">Output Container:</span>
-            <div class="flex gap-2">
-              <button type="button" class="container-btn px-3 py-1 rounded-lg text-xs font-medium border border-brand bg-brand/10 text-brand" data-val="mp4">MP4</button>
-              <button type="button" class="container-btn px-3 py-1 rounded-lg text-xs font-medium border border-darkBorder bg-darkCard text-gray-300" data-val="mkv">MKV</button>
-              <button type="button" class="container-btn px-3 py-1 rounded-lg text-xs font-medium border border-darkBorder bg-darkCard text-gray-300" data-val="webm">WEBM</button>
+        <!-- 1. Music (Audio) Formats Section -->
+        <div>
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-7 h-7 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20 flex items-center justify-center text-xs font-bold">
+              <i class="fa-solid fa-music"></i>
             </div>
+            <h4 class="text-sm font-bold text-white uppercase tracking-wider">Download as Music (Audio)</h4>
           </div>
-        </div>
 
-        <!-- 2. Audio Options -->
-        <div id="audioOptionsPanel" class="hidden space-y-4">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">Audio Format</label>
-              <div class="flex flex-wrap gap-2">
-                <button type="button" class="audio-fmt-btn px-3 py-2 rounded-lg text-xs font-bold border border-brand bg-brand/10 text-brand" data-fmt="mp3">MP3</button>
-                <button type="button" class="audio-fmt-btn px-3 py-2 rounded-lg text-xs font-bold border border-darkBorder bg-darkCard text-gray-300" data-fmt="m4a">M4A</button>
-                <button type="button" class="audio-fmt-btn px-3 py-2 rounded-lg text-xs font-bold border border-darkBorder bg-darkCard text-gray-300" data-fmt="flac">FLAC</button>
-                <button type="button" class="audio-fmt-btn px-3 py-2 rounded-lg text-xs font-bold border border-darkBorder bg-darkCard text-gray-300" data-fmt="opus">OPUS</button>
-                <button type="button" class="audio-fmt-btn px-3 py-2 rounded-lg text-xs font-bold border border-darkBorder bg-darkCard text-gray-300" data-fmt="wav">WAV</button>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+            <!-- MP3 320k High Quality -->
+            <button onclick="triggerQuickDownload('audio', 'mp3', '320')" class="p-3 rounded-xl bg-snapCard hover:bg-snapCardHover border border-snapBorder hover:border-snapGold flex items-center justify-between text-left transition group">
+              <div class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-lg bg-snapGold/10 text-snapGold font-black text-xs flex items-center justify-center">MP3</span>
+                <div>
+                  <div class="text-xs font-bold text-white group-hover:text-snapGold transition">320 kbps (HQ)</div>
+                  <div class="text-[10px] text-gray-400">Best Audio Quality</div>
+                </div>
               </div>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">Audio Quality (Bitrate)</label>
-              <div class="flex flex-wrap gap-2">
-                <button type="button" class="audio-q-btn px-3 py-2 rounded-lg text-xs font-bold border border-brand bg-brand/10 text-brand" data-q="320">320 kbps</button>
-                <button type="button" class="audio-q-btn px-3 py-2 rounded-lg text-xs font-bold border border-darkBorder bg-darkCard text-gray-300" data-q="256">256 kbps</button>
-                <button type="button" class="audio-q-btn px-3 py-2 rounded-lg text-xs font-bold border border-darkBorder bg-darkCard text-gray-300" data-q="192">192 kbps</button>
-                <button type="button" class="audio-q-btn px-3 py-2 rounded-lg text-xs font-bold border border-darkBorder bg-darkCard text-gray-300" data-q="128">128 kbps</button>
+              <div class="w-7 h-7 rounded-full bg-snapDark flex items-center justify-center text-gray-400 group-hover:bg-snapGold group-hover:text-black transition text-xs">
+                <i class="fa-solid fa-arrow-down"></i>
               </div>
+            </button>
+
+            <!-- MP3 128k Standard -->
+            <button onclick="triggerQuickDownload('audio', 'mp3', '128')" class="p-3 rounded-xl bg-snapCard hover:bg-snapCardHover border border-snapBorder hover:border-snapGold flex items-center justify-between text-left transition group">
+              <div class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 font-black text-xs flex items-center justify-center">MP3</span>
+                <div>
+                  <div class="text-xs font-bold text-white group-hover:text-snapGold transition">128 kbps (Standard)</div>
+                  <div class="text-[10px] text-gray-400">Fast & Balanced</div>
+                </div>
+              </div>
+              <div class="w-7 h-7 rounded-full bg-snapDark flex items-center justify-center text-gray-400 group-hover:bg-snapGold group-hover:text-black transition text-xs">
+                <i class="fa-solid fa-arrow-down"></i>
+              </div>
+            </button>
+
+            <!-- M4A Original -->
+            <button onclick="triggerQuickDownload('audio', 'm4a', '128')" class="p-3 rounded-xl bg-snapCard hover:bg-snapCardHover border border-snapBorder hover:border-snapGold flex items-center justify-between text-left transition group">
+              <div class="flex items-center gap-3">
+                <span class="w-8 h-8 rounded-lg bg-pink-500/10 text-pink-400 font-black text-xs flex items-center justify-center">M4A</span>
+                <div>
+                  <div class="text-xs font-bold text-white group-hover:text-snapGold transition">M4A (Apple / AAC)</div>
+                  <div class="text-[10px] text-gray-400">Lossless Stream</div>
+                </div>
+              </div>
+              <div class="w-7 h-7 rounded-full bg-snapDark flex items-center justify-center text-gray-400 group-hover:bg-snapGold group-hover:text-black transition text-xs">
+                <i class="fa-solid fa-arrow-down"></i>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Video Formats Section -->
+        <div>
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-7 h-7 rounded-lg bg-amber-500/10 text-snapGold border border-snapGold/20 flex items-center justify-center text-xs font-bold">
+              <i class="fa-solid fa-video"></i>
             </div>
+            <h4 class="text-sm font-bold text-white uppercase tracking-wider">Download as Video (MP4)</h4>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5" id="videoFormatsContainer">
+            <!-- Dynamically populated or default presets -->
+            <button onclick="triggerQuickDownload('video', 'bestvideo[height<=1080]+bestaudio/best')" class="p-3 rounded-xl bg-snapCard hover:bg-snapCardHover border border-snapBorder hover:border-snapGold flex items-center justify-between text-left transition group">
+              <div class="flex items-center gap-3">
+                <span class="w-10 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 font-black text-xs flex items-center justify-center">1080p</span>
+                <div>
+                  <div class="text-xs font-bold text-white group-hover:text-snapGold transition">Full HD 1080p</div>
+                  <div class="text-[10px] text-gray-400">High Definition MP4</div>
+                </div>
+              </div>
+              <div class="w-7 h-7 rounded-full bg-snapDark flex items-center justify-center text-gray-400 group-hover:bg-snapGold group-hover:text-black transition text-xs">
+                <i class="fa-solid fa-arrow-down"></i>
+              </div>
+            </button>
+
+            <button onclick="triggerQuickDownload('video', 'bestvideo[height<=720]+bestaudio/best')" class="p-3 rounded-xl bg-snapCard hover:bg-snapCardHover border border-snapBorder hover:border-snapGold flex items-center justify-between text-left transition group">
+              <div class="flex items-center gap-3">
+                <span class="w-10 h-8 rounded-lg bg-blue-500/10 text-blue-400 font-black text-xs flex items-center justify-center">720p</span>
+                <div>
+                  <div class="text-xs font-bold text-white group-hover:text-snapGold transition">HD 720p</div>
+                  <div class="text-[10px] text-gray-400">Standard HD MP4</div>
+                </div>
+              </div>
+              <div class="w-7 h-7 rounded-full bg-snapDark flex items-center justify-center text-gray-400 group-hover:bg-snapGold group-hover:text-black transition text-xs">
+                <i class="fa-solid fa-arrow-down"></i>
+              </div>
+            </button>
+
+            <button onclick="triggerQuickDownload('video', 'bestvideo[height<=480]+bestaudio/best')" class="p-3 rounded-xl bg-snapCard hover:bg-snapCardHover border border-snapBorder hover:border-snapGold flex items-center justify-between text-left transition group">
+              <div class="flex items-center gap-3">
+                <span class="w-10 h-8 rounded-lg bg-gray-500/10 text-gray-300 font-black text-xs flex items-center justify-center">480p</span>
+                <div>
+                  <div class="text-xs font-bold text-white group-hover:text-snapGold transition">SD 480p</div>
+                  <div class="text-[10px] text-gray-400">Compact File Size</div>
+                </div>
+              </div>
+              <div class="w-7 h-7 rounded-full bg-snapDark flex items-center justify-center text-gray-400 group-hover:bg-snapGold group-hover:text-black transition text-xs">
+                <i class="fa-solid fa-arrow-down"></i>
+              </div>
+            </button>
+
+            <button onclick="triggerQuickDownload('video', 'bestvideo*+bestaudio/best')" class="p-3 rounded-xl bg-snapCard hover:bg-snapCardHover border border-snapBorder hover:border-snapGold flex items-center justify-between text-left transition group">
+              <div class="flex items-center gap-3">
+                <span class="w-10 h-8 rounded-lg bg-purple-500/10 text-purple-400 font-black text-xs flex items-center justify-center">MAX</span>
+                <div>
+                  <div class="text-xs font-bold text-white group-hover:text-snapGold transition">Best (4K / 2K)</div>
+                  <div class="text-[10px] text-gray-400">Maximum Quality Stream</div>
+                </div>
+              </div>
+              <div class="w-7 h-7 rounded-full bg-snapDark flex items-center justify-center text-gray-400 group-hover:bg-snapGold group-hover:text-black transition text-xs">
+                <i class="fa-solid fa-arrow-down"></i>
+              </div>
+            </button>
           </div>
         </div>
 
-        <!-- 3. Advanced Custom Format -->
-        <div id="advancedOptionsPanel" class="hidden space-y-4">
-          <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider">Custom yt-dlp Format String (-f)</label>
-          <input
-            id="customFormatInput"
-            type="text"
-            value="bestvideo*+bestaudio/best"
-            placeholder="e.g. bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4] / bv*+ba/b"
-            class="w-full px-3.5 py-2.5 rounded-xl bg-darkCard border border-darkBorder font-mono text-xs sm:text-sm text-gray-200 focus:border-brand focus:outline-none"
-          />
-          <div class="max-h-44 overflow-y-auto border border-darkBorder rounded-xl p-3 bg-black/40 text-[11px] sm:text-xs font-mono" id="rawFormatsList"></div>
-        </div>
-
-        <!-- Post-Processing Features -->
-        <div class="pt-4 border-t border-darkBorder space-y-3">
-          <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider">Post-Processing & Enhancements</label>
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">
-            <label class="flex items-center gap-2 p-2.5 sm:p-3 rounded-xl bg-darkCard border border-darkBorder cursor-pointer hover:border-gray-500 transition text-xs">
-              <input id="checkThumbnail" type="checkbox" checked class="w-4 h-4 rounded text-brand focus:ring-0 bg-darkBg border-gray-600">
-              <span class="text-gray-200">Embed Cover Art</span>
-            </label>
-            <label class="flex items-center gap-2 p-2.5 sm:p-3 rounded-xl bg-darkCard border border-darkBorder cursor-pointer hover:border-gray-500 transition text-xs">
-              <input id="checkMetadata" type="checkbox" checked class="w-4 h-4 rounded text-brand focus:ring-0 bg-darkBg border-gray-600">
-              <span class="text-gray-200">Embed Chapters & Tags</span>
-            </label>
-            <label class="flex items-center gap-2 p-2.5 sm:p-3 rounded-xl bg-darkCard border border-darkBorder cursor-pointer hover:border-gray-500 transition text-xs">
-              <input id="checkSubtitles" type="checkbox" class="w-4 h-4 rounded text-brand focus:ring-0 bg-darkBg border-gray-600">
-              <span class="text-gray-200">Embed Subtitles</span>
-            </label>
-            <label class="flex items-center gap-2 p-2.5 sm:p-3 rounded-xl bg-darkCard border border-darkBorder cursor-pointer hover:border-gray-500 transition text-xs">
-              <input id="checkSponsorBlock" type="checkbox" class="w-4 h-4 rounded text-brand focus:ring-0 bg-darkBg border-gray-600">
-              <span class="text-gray-200">SponsorBlock (Cut sponsors)</span>
-            </label>
-          </div>
-
-          <!-- Trimming -->
-          <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 text-xs">
-            <span class="text-gray-400 font-medium whitespace-nowrap"><i class="fa-solid fa-scissors mr-1"></i> Clip Trimming:</span>
-            <div class="flex items-center gap-2 flex-1">
-              <input id="clipStart" type="text" placeholder="Start (e.g. 00:01:30)" class="w-full px-3 py-1.5 rounded-lg bg-darkCard border border-darkBorder text-white text-xs font-mono focus:border-brand focus:outline-none">
+        <!-- 3. Advanced Settings Accordion -->
+        <details class="text-xs border-t border-snapBorder pt-4">
+          <summary class="cursor-pointer text-gray-400 hover:text-snapGold font-bold flex items-center justify-between select-none">
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-sliders"></i> Advanced Post-Processing Options</span>
+            <i class="fa-solid fa-chevron-down text-[10px]"></i>
+          </summary>
+          <div class="pt-3 space-y-3">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              <label class="flex items-center gap-2 p-2 rounded-lg bg-snapDark border border-snapBorder cursor-pointer text-gray-300">
+                <input id="checkThumbnail" type="checkbox" checked class="accent-snapGold">
+                <span>Embed Thumbnail</span>
+              </label>
+              <label class="flex items-center gap-2 p-2 rounded-lg bg-snapDark border border-snapBorder cursor-pointer text-gray-300">
+                <input id="checkMetadata" type="checkbox" checked class="accent-snapGold">
+                <span>Embed Metadata</span>
+              </label>
+              <label class="flex items-center gap-2 p-2 rounded-lg bg-snapDark border border-snapBorder cursor-pointer text-gray-300">
+                <input id="checkSubtitles" type="checkbox" class="accent-snapGold">
+                <span>Embed Subtitles</span>
+              </label>
+              <label class="flex items-center gap-2 p-2 rounded-lg bg-snapDark border border-snapBorder cursor-pointer text-gray-300">
+                <input id="checkSponsorBlock" type="checkbox" class="accent-snapGold">
+                <span>SponsorBlock</span>
+              </label>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-gray-400">Trim clip:</span>
+              <input id="clipStart" type="text" placeholder="00:00:10" class="px-2 py-1 rounded bg-snapDark border border-snapBorder text-white text-xs w-24">
               <span class="text-gray-500">to</span>
-              <input id="clipEnd" type="text" placeholder="End (e.g. 00:03:00)" class="w-full px-3 py-1.5 rounded-lg bg-darkCard border border-darkBorder text-white text-xs font-mono focus:border-brand focus:outline-none">
+              <input id="clipEnd" type="text" placeholder="00:01:30" class="px-2 py-1 rounded bg-snapDark border border-snapBorder text-white text-xs w-24">
             </div>
           </div>
-        </div>
-
-        <!-- Download Action Button -->
-        <div class="pt-3 sm:pt-4">
-          <button
-            id="startDownloadBtn"
-            class="w-full py-3.5 sm:py-4 rounded-xl bg-brand hover:bg-brandDark text-white font-bold text-sm sm:text-base transition flex items-center justify-center gap-2 shadow-xl shadow-brand/30 pulse-glow"
-          >
-            <i class="fa-solid fa-cloud-arrow-down text-base sm:text-lg"></i>
-            <span>Process & Download Now</span>
-          </button>
-        </div>
+        </details>
 
       </div>
     </div>
 
-    <!-- Live Tasks & Downloads Manager -->
-    <div id="tasksSection" class="glass rounded-2xl p-4 sm:p-6 shadow-xl space-y-4">
-      <div class="flex items-center justify-between border-b border-darkBorder pb-3 sm:pb-4">
-        <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-circle-notch text-brand animate-spin" id="taskSpinner" style="display:none;"></i>
-          Downloads & Tasks
+    <!-- SnapTube Downloads & Tasks Manager -->
+    <div id="tasksSection" class="glass rounded-2xl p-4 sm:p-5 shadow-xl space-y-3.5 border border-snapBorder">
+      <div class="flex items-center justify-between border-b border-snapBorder pb-3">
+        <h3 class="text-sm sm:text-base font-extrabold text-white flex items-center gap-2">
+          <i class="fa-solid fa-circle-notch text-snapGold animate-spin" id="taskSpinner" style="display:none;"></i>
+          <span>Downloads & Tasks</span>
+          <span id="activeCountBadge" class="hidden text-[10px] bg-snapGold text-black font-black px-1.5 py-0.2 rounded-full">0</span>
         </h3>
         <div class="flex items-center gap-3">
-          <button id="clearTasksBtn" class="text-xs text-gray-400 hover:text-red-400 transition flex items-center gap-1">
+          <button id="clearTasksBtn" class="text-xs text-gray-400 hover:text-red-400 transition flex items-center gap-1 font-semibold">
             <i class="fa-regular fa-trash-can"></i> Clear
           </button>
-          <button id="refreshTasksBtn" class="text-xs text-gray-400 hover:text-white transition flex items-center gap-1">
+          <button id="refreshTasksBtn" class="text-xs text-gray-400 hover:text-snapGold transition flex items-center gap-1 font-semibold">
             <i class="fa-solid fa-rotate-right"></i> Refresh
           </button>
         </div>
       </div>
 
-      <div id="tasksList" class="space-y-3">
-        <div class="text-center py-8 text-gray-500 text-xs sm:text-sm">No active tasks in this session. Enter a URL above to start!</div>
+      <div id="tasksList" class="space-y-2.5">
+        <div class="text-center py-8 text-gray-500 text-xs sm:text-sm">
+          <i class="fa-solid fa-cloud-arrow-down text-2xl mb-2 text-gray-600 block"></i>
+          No active tasks in this session. Enter a URL above to start!
+        </div>
       </div>
     </div>
 
   </main>
 
-  <footer class="py-5 sm:py-6 text-center text-[11px] sm:text-xs text-gray-500 border-t border-darkBorder mt-8 sm:mt-12">
-    Powered by <strong>yt-dlp</strong>, <strong>FFmpeg</strong> & <strong>FastAPI</strong>. Deployed on Railway.
-  </footer>
+  <!-- iPhone Safari Add to Home Screen Prompt (Dismissible) -->
+  <div id="iosPrompt" class="hidden fixed bottom-20 left-4 right-4 z-50 p-3.5 rounded-2xl glass border border-snapGold/40 shadow-2xl flex items-center justify-between text-xs text-gray-200">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-snapGold flex items-center justify-center text-black font-bold shrink-0">
+        <i class="fa-solid fa-arrow-up-from-bracket"></i>
+      </div>
+      <div>
+        <div class="font-bold text-white">Add SnapTube to Home Screen</div>
+        <div class="text-[11px] text-gray-400">Tap <i class="fa-solid fa-arrow-up-from-bracket"></i> Share, then select <strong>'Add to Home Screen'</strong></div>
+      </div>
+    </div>
+    <button onclick="document.getElementById('iosPrompt').style.display='none'" class="text-gray-400 hover:text-white px-2 py-1">
+      <i class="fa-solid fa-xmark text-sm"></i>
+    </button>
+  </div>
+
+  <!-- Mobile Bottom Navigation Bar (SnapTube Native Mobile UX) -->
+  <nav class="fixed bottom-0 left-0 right-0 z-50 glass border-t border-snapBorder px-6 py-2 flex items-center justify-around text-center safe-bottom sm:hidden">
+    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'}); document.getElementById('urlInput').focus();" class="flex flex-col items-center gap-0.5 text-snapGold">
+      <i class="fa-solid fa-magnifying-glass text-base"></i>
+      <span class="text-[10px] font-bold">Search</span>
+    </button>
+    <button onclick="document.getElementById('tasksSection').scrollIntoView({behavior: 'smooth'})" class="flex flex-col items-center gap-0.5 text-gray-400 hover:text-snapGold relative">
+      <i class="fa-solid fa-arrow-down text-base"></i>
+      <span class="text-[10px] font-bold">Downloads</span>
+      <span id="navBadge" class="hidden absolute -top-1 -right-2 w-3.5 h-3.5 bg-snapGold text-black font-black text-[9px] rounded-full flex items-center justify-center">0</span>
+    </button>
+    <button onclick="if(currentMetadata) { document.getElementById('mediaDetailsCard').scrollIntoView({behavior: 'smooth'}); } else { alert('Paste a link first!'); }" class="flex flex-col items-center gap-0.5 text-gray-400 hover:text-snapGold">
+      <i class="fa-solid fa-list-check text-base"></i>
+      <span class="text-[10px] font-bold">Formats</span>
+    </button>
+  </nav>
 
   <script>
-    // State - sessionTasks resets automatically whenever the page is refreshed!
+    // State
     let currentMetadata = null;
-    let selectedMode = 'video'; // video, audio, advanced
-    let selectedVideoPreset = 'bestvideo*+bestaudio/best';
-    let selectedAudioFormat = 'mp3';
-    let selectedAudioQuality = '320';
-    let selectedContainer = 'mp4';
-    const sessionTasks = new Set(); // Auto-cleared on refresh
+    const sessionTasks = new Set(); // Resets on page refresh
 
     // Elements
     const urlInput = document.getElementById('urlInput');
@@ -310,14 +413,20 @@
     const tasksList = document.getElementById('tasksList');
     const taskSpinner = document.getElementById('taskSpinner');
     const clearTasksBtn = document.getElementById('clearTasksBtn');
+    const activeCountBadge = document.getElementById('activeCountBadge');
+    const navBadge = document.getElementById('navBadge');
+    const videoFormatsContainer = document.getElementById('videoFormatsContainer');
 
     // Clipboard Paste
     pasteBtn.addEventListener('click', async () => {
       try {
         const text = await navigator.clipboard.readText();
-        if (text) urlInput.value = text.trim();
+        if (text) {
+          urlInput.value = text.trim();
+          fetchBtn.click(); // Auto-start analyze on paste!
+        }
       } catch (err) {
-        alert('Please allow clipboard permission or paste manually.');
+        alert('Please paste the URL manually or allow clipboard permission.');
       }
     });
 
@@ -325,87 +434,6 @@
     clearTasksBtn.addEventListener('click', () => {
       sessionTasks.clear();
       renderTasks([]);
-    });
-
-    // Tab switching
-    const tabVideo = document.getElementById('tabVideo');
-    const tabAudio = document.getElementById('tabAudio');
-    const tabAdvanced = document.getElementById('tabAdvanced');
-    const videoOptionsPanel = document.getElementById('videoOptionsPanel');
-    const audioOptionsPanel = document.getElementById('audioOptionsPanel');
-    const advancedOptionsPanel = document.getElementById('advancedOptionsPanel');
-
-    function switchTab(mode) {
-      selectedMode = mode;
-      [tabVideo, tabAudio, tabAdvanced].forEach(t => {
-        t.className = 'tab-btn pb-2.5 sm:pb-3 text-gray-400 hover:text-white border-b-2 border-transparent flex items-center gap-1.5 sm:gap-2 whitespace-nowrap';
-      });
-      videoOptionsPanel.classList.add('hidden');
-      audioOptionsPanel.classList.add('hidden');
-      advancedOptionsPanel.classList.add('hidden');
-
-      if (mode === 'video') {
-        tabVideo.className = 'tab-btn pb-2.5 sm:pb-3 text-brand border-b-2 border-brand flex items-center gap-1.5 sm:gap-2 whitespace-nowrap';
-        videoOptionsPanel.classList.remove('hidden');
-      } else if (mode === 'audio') {
-        tabAudio.className = 'tab-btn pb-2.5 sm:pb-3 text-brand border-b-2 border-brand flex items-center gap-1.5 sm:gap-2 whitespace-nowrap';
-        audioOptionsPanel.classList.remove('hidden');
-      } else {
-        tabAdvanced.className = 'tab-btn pb-2.5 sm:pb-3 text-brand border-b-2 border-brand flex items-center gap-1.5 sm:gap-2 whitespace-nowrap';
-        advancedOptionsPanel.classList.remove('hidden');
-      }
-    }
-
-    tabVideo.onclick = () => switchTab('video');
-    tabAudio.onclick = () => switchTab('audio');
-    tabAdvanced.onclick = () => switchTab('advanced');
-
-    // Preset card clicks
-    document.querySelectorAll('.preset-card').forEach(card => {
-      card.addEventListener('click', () => {
-        document.querySelectorAll('.preset-card').forEach(c => {
-          c.className = 'preset-card cursor-pointer p-3 sm:p-3.5 rounded-xl border border-darkBorder bg-darkCard hover:border-gray-500 text-gray-300 flex flex-col justify-between transition';
-        });
-        card.className = 'preset-card cursor-pointer p-3 sm:p-3.5 rounded-xl border border-brand bg-brand/10 text-white flex flex-col justify-between transition';
-        const input = card.querySelector('input');
-        if (input) {
-          input.checked = true;
-          selectedVideoPreset = input.value;
-        }
-      });
-    });
-
-    // Container selection
-    document.querySelectorAll('.container-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.container-btn').forEach(b => {
-          b.className = 'container-btn px-3 py-1 rounded-lg text-xs font-medium border border-darkBorder bg-darkCard text-gray-300';
-        });
-        btn.className = 'container-btn px-3 py-1 rounded-lg text-xs font-medium border border-brand bg-brand/10 text-brand';
-        selectedContainer = btn.dataset.val;
-      });
-    });
-
-    // Audio format selection
-    document.querySelectorAll('.audio-fmt-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.audio-fmt-btn').forEach(b => {
-          b.className = 'audio-fmt-btn px-3 py-2 rounded-lg text-xs font-bold border border-darkBorder bg-darkCard text-gray-300';
-        });
-        btn.className = 'audio-fmt-btn px-3 py-2 rounded-lg text-xs font-bold border border-brand bg-brand/10 text-brand';
-        selectedAudioFormat = btn.dataset.fmt;
-      });
-    });
-
-    // Audio bitrate selection
-    document.querySelectorAll('.audio-q-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.audio-q-btn').forEach(b => {
-          b.className = 'audio-q-btn px-3 py-2 rounded-lg text-xs font-bold border border-darkBorder bg-darkCard text-gray-300';
-        });
-        btn.className = 'audio-q-btn px-3 py-2 rounded-lg text-xs font-bold border border-brand bg-brand/10 text-brand';
-        selectedAudioQuality = btn.dataset.q;
-      });
     });
 
     // Fetch Metadata
@@ -437,7 +465,7 @@
         errorAlert.classList.remove('hidden');
       } finally {
         fetchBtn.disabled = false;
-        fetchBtn.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i><span>Analyze</span>';
+        fetchBtn.innerHTML = '<i class="fa-solid fa-arrow-down"></i><span>Download</span>';
       }
     });
 
@@ -447,43 +475,65 @@
       document.getElementById('mediaDuration').textContent = data.duration_string || '';
       document.getElementById('mediaUploader').querySelector('span').textContent = data.channel || data.uploader || 'Unknown';
       document.getElementById('mediaViews').querySelector('span').textContent = (data.view_count || 0).toLocaleString() + ' views';
-      document.getElementById('mediaUrl').textContent = data.webpage_url || '';
 
-      // Populate raw formats
-      const rawDiv = document.getElementById('rawFormatsList');
-      rawDiv.innerHTML = '<div class="text-gray-400 mb-2 font-bold">Detected Streams & Codecs:</div>' +
-        data.formats.map(f => {
-          return `<div class="py-0.5 border-b border-darkBorder/50 flex justify-between text-gray-300">
-            <span>[${f.format_id}] ${f.resolution || ''} (${f.ext}) ${f.vcodec || ''} ${f.acodec || ''}</span>
-            <span class="text-gray-400">${f.filesize ? (f.filesize / 1024 / 1024).toFixed(1) + ' MB' : ''}</span>
-          </div>`;
-        }).join('');
+      // Build video format list dynamically based on detected streams
+      const availableHeights = new Set();
+      if (data.formats) {
+        data.formats.forEach(f => {
+          if (f.height && f.height > 0) availableHeights.add(f.height);
+        });
+      }
+
+      let formatHtml = '';
+      const presets = [
+        { label: '4K Ultra HD', height: 2160, badge: '4K', desc: 'UHD 3840x2160', selector: 'bestvideo[height<=2160]+bestaudio/best' },
+        { label: '2K Quad HD', height: 1440, badge: '2K', desc: 'QHD 2560x1440', selector: 'bestvideo[height<=1440]+bestaudio/best' },
+        { label: '1080p Full HD', height: 1080, badge: '1080p', desc: 'FHD 1920x1080', selector: 'bestvideo[height<=1080]+bestaudio/best' },
+        { label: '720p HD', height: 720, badge: '720p', desc: 'HD 1280x720', selector: 'bestvideo[height<=720]+bestaudio/best' },
+        { label: '480p SD', height: 480, badge: '480p', desc: 'Standard 854x480', selector: 'bestvideo[height<=480]+bestaudio/best' },
+        { label: '360p Fast', height: 360, badge: '360p', desc: 'Low Data 640x360', selector: 'bestvideo[height<=360]+bestaudio/best' }
+      ];
+
+      presets.forEach(p => {
+        // If stream has this resolution or we default to 1080/720/480
+        if (availableHeights.size === 0 || availableHeights.has(p.height) || [1080, 720, 480].includes(p.height)) {
+          formatHtml += `
+            <button onclick="triggerQuickDownload('video', '${p.selector}')" class="p-3 rounded-xl bg-snapCard hover:bg-snapCardHover border border-snapBorder hover:border-snapGold flex items-center justify-between text-left transition group">
+              <div class="flex items-center gap-3">
+                <span class="w-11 h-8 rounded-lg bg-snapGold/10 text-snapGold font-black text-xs flex items-center justify-center">${p.badge}</span>
+                <div>
+                  <div class="text-xs font-bold text-white group-hover:text-snapGold transition">${p.label}</div>
+                  <div class="text-[10px] text-gray-400">${p.desc}</div>
+                </div>
+              </div>
+              <div class="w-7 h-7 rounded-full bg-snapDark flex items-center justify-center text-gray-400 group-hover:bg-snapGold group-hover:text-black transition text-xs">
+                <i class="fa-solid fa-arrow-down"></i>
+              </div>
+            </button>
+          `;
+        }
+      });
+
+      if (formatHtml) {
+        videoFormatsContainer.innerHTML = formatHtml;
+      }
 
       mediaDetailsCard.classList.remove('hidden');
       mediaDetailsCard.scrollIntoView({ behavior: 'smooth' });
     }
 
-    // Start Download
-    document.getElementById('startDownloadBtn').addEventListener('click', async () => {
+    // 1-Click Trigger Quick Download (SnapTube Style!)
+    async function triggerQuickDownload(type, formatOrSelector, audioBitrate = '320') {
       if (!currentMetadata) return;
 
-      const isAudio = selectedMode === 'audio';
-      let formatSelector = 'bestvideo*+bestaudio/best';
-      if (selectedMode === 'video') {
-        formatSelector = selectedVideoPreset || 'bestvideo*+bestaudio/best';
-      } else if (selectedMode === 'audio') {
-        formatSelector = 'bestaudio/best';
-      } else {
-        formatSelector = document.getElementById('customFormatInput').value || 'bestvideo*+bestaudio/best';
-      }
-
+      const isAudio = type === 'audio';
       const reqBody = {
         url: currentMetadata.webpage_url,
-        format_selector: formatSelector,
+        format_selector: isAudio ? 'bestaudio/best' : formatOrSelector,
         audio_only: isAudio,
-        audio_format: isAudio ? selectedAudioFormat : null,
-        audio_quality: isAudio ? selectedAudioQuality : null,
-        merge_output_format: selectedContainer,
+        audio_format: isAudio ? formatOrSelector : null,
+        audio_quality: isAudio ? audioBitrate : null,
+        merge_output_format: 'mp4',
         embed_thumbnail: document.getElementById('checkThumbnail').checked,
         embed_metadata: document.getElementById('checkMetadata').checked,
         embed_subtitles: isAudio ? false : document.getElementById('checkSubtitles').checked,
@@ -499,20 +549,28 @@
           body: JSON.stringify(reqBody)
         });
 
-        if (!res.ok) throw new Error('Failed to initiate download task.');
+        if (!res.ok) throw new Error('Failed to start download task.');
         const result = await res.json();
         
-        // Register this task ID in the current session so it shows in the UI
         sessionTasks.add(result.task_id);
-
         pollTasks();
         document.getElementById('tasksSection').scrollIntoView({ behavior: 'smooth' });
       } catch (err) {
         alert(err.message);
       }
-    });
+    }
 
-    // Poll Tasks - only displays tasks registered in the current session
+    function cleanEta(str) {
+      if (!str) return '';
+      const match = str.match(/(\d+(?:\.\d+)?)\s*s/);
+      if (match) {
+        const sec = Math.round(parseFloat(match[1]));
+        return sec > 0 ? `${sec}s` : '1s';
+      }
+      return str;
+    }
+
+    // Poll Tasks
     async function pollTasks() {
       if (sessionTasks.size === 0) {
         renderTasks([]);
@@ -522,32 +580,32 @@
         const res = await fetch('/api/tasks');
         if (!res.ok) return;
         const tasks = await res.json();
-        // Filter tasks to only include those created in this browser session
         const currentSessionTasks = tasks.filter(t => sessionTasks.has(t.task_id));
         renderTasks(currentSessionTasks.reverse());
       } catch (e) {}
     }
 
-    function cleanEta(str) {
-      if (!str) return '';
-      // If it has long decimals like 0.0m 1.1495384970731293s, clean it up
-      const match = str.match(/(\d+(?:\.\d+)?)\s*s/);
-      if (match) {
-        const sec = Math.round(parseFloat(match[1]));
-        return sec > 0 ? `${sec}s` : '1s';
-      }
-      return str;
-    }
-
     function renderTasks(tasks) {
       if (!tasks || tasks.length === 0) {
-        tasksList.innerHTML = '<div class="text-center py-8 text-gray-500 text-xs sm:text-sm">No active tasks in this session. Enter a URL above to start!</div>';
+        tasksList.innerHTML = '<div class="text-center py-8 text-gray-500 text-xs sm:text-sm"><i class="fa-solid fa-cloud-arrow-down text-2xl mb-2 text-gray-600 block"></i>No active tasks in this session. Enter a URL above to start!</div>';
         taskSpinner.style.display = 'none';
+        activeCountBadge.classList.add('hidden');
+        navBadge.classList.add('hidden');
         return;
       }
 
-      const hasActive = tasks.some(t => t.status === 'downloading' || t.status === 'processing' || t.status === 'queued');
-      taskSpinner.style.display = hasActive ? 'inline-block' : 'none';
+      const activeCount = tasks.filter(t => t.status === 'downloading' || t.status === 'processing' || t.status === 'queued').length;
+      taskSpinner.style.display = activeCount > 0 ? 'inline-block' : 'none';
+      
+      if (activeCount > 0) {
+        activeCountBadge.textContent = activeCount;
+        activeCountBadge.classList.remove('hidden');
+        navBadge.textContent = activeCount;
+        navBadge.classList.remove('hidden');
+      } else {
+        activeCountBadge.classList.add('hidden');
+        navBadge.classList.add('hidden');
+      }
 
       tasksList.innerHTML = tasks.map(t => {
         let statusBadge = '';
@@ -555,19 +613,19 @@
         let downloadBtn = '';
 
         if (t.status === 'downloading') {
-          statusBadge = `<span class="text-[11px] sm:text-xs px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 font-semibold border border-blue-500/20 whitespace-nowrap">Downloading ${t.progress.toFixed(0)}%</span>`;
-          progressBar = `<div class="w-full bg-darkBg rounded-full h-2 mt-2 overflow-hidden"><div class="bg-brand h-2 rounded-full transition-all duration-300" style="width: ${t.progress}%"></div></div>`;
+          statusBadge = `<span class="text-[11px] px-2.5 py-0.5 rounded-full bg-amber-500/10 text-snapGold font-black border border-snapGold/20 whitespace-nowrap">Downloading ${t.progress.toFixed(0)}%</span>`;
+          progressBar = `<div class="w-full bg-snapDark rounded-full h-2 mt-2 overflow-hidden border border-snapBorder"><div class="bg-gradient-to-r from-amber-500 to-snapGold h-2 rounded-full transition-all duration-300" style="width: ${t.progress}%"></div></div>`;
         } else if (t.status === 'processing') {
-          statusBadge = `<span class="text-[11px] sm:text-xs px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 font-semibold border border-amber-500/20 animate-pulse whitespace-nowrap">FFmpeg Merging...</span>`;
-          progressBar = `<div class="w-full bg-darkBg rounded-full h-2 mt-2 overflow-hidden"><div class="bg-amber-400 h-2 rounded-full w-full animate-pulse"></div></div>`;
+          statusBadge = `<span class="text-[11px] px-2.5 py-0.5 rounded-full bg-purple-500/10 text-purple-400 font-bold border border-purple-500/20 animate-pulse whitespace-nowrap">FFmpeg Merging...</span>`;
+          progressBar = `<div class="w-full bg-snapDark rounded-full h-2 mt-2 overflow-hidden border border-snapBorder"><div class="bg-purple-500 h-2 rounded-full w-full animate-pulse"></div></div>`;
         } else if (t.status === 'completed') {
-          statusBadge = `<span class="text-[11px] sm:text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-semibold border border-emerald-500/20 whitespace-nowrap">Ready to Save</span>`;
+          statusBadge = `<span class="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20 whitespace-nowrap">Ready to Save</span>`;
           progressBar = `<div class="w-full bg-emerald-500/20 rounded-full h-2 mt-2 overflow-hidden"><div class="bg-emerald-500 h-2 rounded-full w-full"></div></div>`;
-          downloadBtn = `<a href="/api/tasks/${t.task_id}/file" download class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition shadow-lg shadow-emerald-600/30">
-            <i class="fa-solid fa-download"></i> Save to PC
+          downloadBtn = `<a href="/api/tasks/${t.task_id}/file" download class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-bold text-xs transition shadow-lg shadow-emerald-500/30">
+            <i class="fa-solid fa-download"></i> Save to Device
           </a>`;
         } else if (t.status === 'error') {
-          statusBadge = `<span class="text-[11px] sm:text-xs px-2.5 py-0.5 rounded-full bg-red-500/10 text-red-400 font-semibold border border-red-500/20 whitespace-nowrap">Error</span>`;
+          statusBadge = `<span class="text-[11px] px-2.5 py-0.5 rounded-full bg-red-500/10 text-red-400 font-bold border border-red-500/20 whitespace-nowrap">Error</span>`;
           progressBar = `<div class="text-xs text-red-400 mt-1">${t.error || 'Failed'}</div>`;
         }
 
@@ -575,14 +633,17 @@
         const metaLine = t.speed_str ? `${t.speed_str}${etaClean ? ' • ETA: ' + etaClean : ''}` : '';
 
         return `
-          <div class="p-3.5 sm:p-4 rounded-xl bg-darkCard border border-darkBorder flex flex-col justify-between transition">
+          <div class="p-3.5 sm:p-4 rounded-xl bg-snapCard border border-snapBorder flex flex-col justify-between transition">
             <div class="flex items-start justify-between gap-2.5">
-              <div class="font-semibold text-xs sm:text-sm text-white truncate max-w-[65%] sm:max-w-lg" title="${t.title || t.url}">${t.title || t.url}</div>
+              <div class="font-bold text-xs sm:text-sm text-white truncate max-w-[65%] sm:max-w-lg" title="${t.title || t.url}">
+                <i class="fa-solid fa-film text-snapGold mr-1.5 text-xs"></i>
+                ${t.title || t.url}
+              </div>
               <div class="shrink-0">${statusBadge}</div>
             </div>
             ${progressBar}
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs text-gray-400 mt-2.5 gap-2">
-              <span class="text-[11px] sm:text-xs">${metaLine}</span>
+              <span class="text-[11px] sm:text-xs font-mono">${metaLine}</span>
               ${downloadBtn}
             </div>
           </div>
@@ -592,6 +653,25 @@
 
     document.getElementById('refreshTasksBtn').onclick = pollTasks;
     setInterval(pollTasks, 2000);
+
+    // iOS Detection for Add to Home Screen Prompt
+    const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+    if (isIos && !isStandalone) {
+      document.getElementById('iosPrompt').classList.remove('hidden');
+    }
+
+    // PWA Install Prompt for Android & Desktop Chrome
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const btn = document.getElementById('pwaInstallBtn');
+      btn.classList.remove('hidden');
+      btn.addEventListener('click', () => {
+        deferredPrompt.prompt();
+      });
+    });
   </script>
 </body>
 </html>

@@ -3,15 +3,16 @@ import urllib.parse
 from fastapi import FastAPI, HTTPException, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
 from typing import Dict, List
 
 from models import ExtractRequest, DownloadRequest, VideoMetadata, TaskStatus
 import downloader
 
 app = FastAPI(
-    title="yt-dlp Railway API Server & Web UI",
-    description="Full-featured yt-dlp backend with merging, post-processing, format extraction, web UI, and file delivery",
-    version="1.0.0"
+    title="SnapTube Pro API & Web UI",
+    description="Full-featured media downloader backend with merging, post-processing, format extraction, web UI, and PWA support",
+    version="2.0.0"
 )
 
 # Enable CORS for cross-origin or local testing
@@ -24,26 +25,71 @@ app.add_middleware(
 )
 
 TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), "templates")
+STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 INDEX_HTML = os.path.join(TEMPLATES_DIR, "index.html")
+
+if os.path.exists(STATIC_DIR):
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
+@app.get("/manifest.json")
+def get_manifest():
+    return {
+        "name": "SnapTube Pro",
+        "short_name": "SnapTube",
+        "description": "Fast & Ad-Free Universal Video & Music Downloader",
+        "start_url": "/",
+        "display": "standalone",
+        "background_color": "#0F0F12",
+        "theme_color": "#FFB800",
+        "orientation": "portrait",
+        "icons": [
+            {
+                "src": "/static/icon-192.png",
+                "sizes": "192x192",
+                "type": "image/png",
+                "purpose": "any maskable"
+            },
+            {
+                "src": "/static/icon-512.png",
+                "sizes": "512x512",
+                "type": "image/png",
+                "purpose": "any maskable"
+            }
+        ]
+    }
+
+@app.get("/apple-touch-icon.png")
+def get_apple_touch_icon():
+    icon_path = os.path.join(STATIC_DIR, "apple-touch-icon.png")
+    if os.path.exists(icon_path):
+        return FileResponse(icon_path, media_type="image/png")
+    raise HTTPException(status_code=404, detail="Icon not found")
+
+@app.get("/favicon.ico")
+def get_favicon():
+    icon_path = os.path.join(STATIC_DIR, "icon-192.png")
+    if os.path.exists(icon_path):
+        return FileResponse(icon_path, media_type="image/png")
+    raise HTTPException(status_code=404, detail="Favicon not found")
 
 @app.get("/")
 def root(request: Request):
-    # If browser requests HTML, serve the PC Web interface
     accept = request.headers.get("accept", "")
     if "text/html" in accept and os.path.exists(INDEX_HTML):
         return FileResponse(INDEX_HTML, media_type="text/html")
 
     return {
         "status": "online",
-        "service": "yt-dlp Railway API Server & Web UI",
-        "version": "1.0.0",
+        "service": "SnapTube Pro API Server & Web UI",
+        "version": "2.0.0",
         "features": [
             "full yt-dlp format selection",
             "video and audio merging (ffmpeg)",
             "post-processing (SponsorBlock, metadata, subtitles, thumbnail embed)",
             "audio extraction (mp3, m4a, flac, opus)",
             "clip trimming",
-            "PC Web Interface"
+            "SnapTube-style 1-click format downloading",
+            "PWA mobile support for iPhone and Android"
         ]
     }
 
