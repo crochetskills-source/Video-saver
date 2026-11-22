@@ -28,14 +28,22 @@ def format_bytes(size: Optional[int]) -> str:
         size /= 1024.0
     return f"{size:.2f} PB"
 
-def format_eta(seconds: Optional[int]) -> str:
+def format_eta(seconds: Any) -> str:
     if not seconds:
         return ""
-    m, s = divmod(seconds, 60)
-    h, m = divmod(m, 60)
-    if h > 0:
-        return f"{h}h {m}m {s}s"
-    return f"{m}m {s}s"
+    try:
+        sec = int(round(float(seconds)))
+        if sec <= 0:
+            return "1s"
+        m, s = divmod(sec, 60)
+        h, m = divmod(m, 60)
+        if h > 0:
+            return f"{h}h {m}m {s}s"
+        if m > 0:
+            return f"{m}m {s}s"
+        return f"{s}s"
+    except Exception:
+        return ""
 
 def clean_url(url: str) -> str:
     """If user pastes a YouTube watch link with an auto-generated radio mix, strip the mix to prevent parsing 100+ videos."""

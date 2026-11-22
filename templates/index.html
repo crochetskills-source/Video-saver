@@ -2,7 +2,7 @@
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>yt-dlp Pro — Media Downloader & Processor</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -24,34 +24,34 @@
     }
   </script>
   <style>
-    body { background-color: #0F0F12; color: #EEEEEE; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: #0F0F12; color: #EEEEEE; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
     .glass { background: rgba(24, 24, 31, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
     .pulse-glow { animation: pulseGlow 2s infinite; }
     @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 15px rgba(255, 0, 51, 0.4); } 50% { box-shadow: 0 0 25px rgba(255, 0, 51, 0.7); } }
   </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col antialiased">
 
   <!-- Header -->
-  <header class="glass sticky top-0 z-50 px-6 py-4 border-b border-darkBorder">
+  <header class="glass sticky top-0 z-50 px-4 py-3 sm:px-6 sm:py-4 border-b border-darkBorder">
     <div class="max-w-6xl mx-auto flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-brand flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand/30">
+      <div class="flex items-center space-x-2.5 sm:space-x-3">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-brand flex items-center justify-center text-white font-bold text-lg sm:text-xl shadow-lg shadow-brand/30 shrink-0">
           <i class="fa-solid fa-play"></i>
         </div>
         <div>
-          <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-            yt-dlp <span class="text-xs bg-brand text-white px-2 py-0.5 rounded-full font-semibold">PRO</span>
+          <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-1.5 sm:gap-2">
+            yt-dlp <span class="text-[10px] sm:text-xs bg-brand text-white px-1.5 py-0.5 rounded-full font-semibold">PRO</span>
           </h1>
-          <p class="text-xs text-gray-400">Full FFmpeg Stream Merging & Post-Processing</p>
+          <p class="hidden sm:block text-xs text-gray-400">Full FFmpeg Stream Merging & Post-Processing</p>
         </div>
       </div>
-      <div class="flex items-center space-x-3">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 whitespace-nowrap">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          Railway Server Online
+          <span class="hidden xs:inline">Server </span>Online
         </span>
-        <a href="https://github.com/crochetskills-source/Video-saver" target="_blank" class="text-gray-400 hover:text-white transition text-lg px-2">
+        <a href="https://github.com/crochetskills-source/Video-saver" target="_blank" class="text-gray-400 hover:text-white transition text-lg px-1">
           <i class="fa-brands fa-github"></i>
         </a>
       </div>
@@ -59,34 +59,34 @@
   </header>
 
   <!-- Main Content -->
-  <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-8 space-y-8">
+  <main class="flex-grow max-w-5xl w-full mx-auto px-3 sm:px-4 py-4 sm:py-8 space-y-6 sm:space-y-8">
 
     <!-- Search Input Hero -->
-    <div class="glass p-6 md:p-8 rounded-2xl shadow-xl">
-      <div class="text-center max-w-2xl mx-auto mb-6">
-        <h2 class="text-2xl md:text-3xl font-extrabold text-white mb-2">Universal Media Downloader</h2>
-        <p class="text-gray-400 text-sm">Download from YouTube, Twitter/X, TikTok, Instagram, Reddit, Twitch & 1000+ sites at maximum quality.</p>
+    <div class="glass p-4 sm:p-6 md:p-8 rounded-2xl shadow-xl">
+      <div class="text-center max-w-2xl mx-auto mb-4 sm:mb-6">
+        <h2 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-1.5 sm:mb-2">Universal Media Downloader</h2>
+        <p class="text-gray-400 text-xs sm:text-sm">Download from YouTube, Twitter/X, TikTok, Instagram, Reddit & 1000+ sites at maximum quality.</p>
       </div>
 
-      <div class="flex flex-col sm:flex-row gap-3">
+      <div class="flex flex-col sm:flex-row gap-2.5 sm:gap-3">
         <div class="relative flex-grow">
-          <i class="fa-solid fa-link absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          <i class="fa-solid fa-link absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
           <input
             id="urlInput"
             type="url"
-            placeholder="Paste video, playlist, or audio link here..."
-            class="w-full pl-11 pr-24 py-3.5 rounded-xl bg-darkCard border border-darkBorder focus:border-brand focus:ring-1 focus:ring-brand focus:outline-none text-white text-sm"
+            placeholder="Paste media link here..."
+            class="w-full pl-10 pr-20 sm:pr-24 py-3 sm:py-3.5 rounded-xl bg-darkCard border border-darkBorder focus:border-brand focus:ring-1 focus:ring-brand focus:outline-none text-white text-sm"
           />
           <button
             id="pasteBtn"
-            class="absolute right-2.5 top-1/2 -translate-y-1/2 px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs text-gray-300 font-medium transition"
+            class="absolute right-2 top-1/2 -translate-y-1/2 px-2.5 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-xs text-gray-300 font-medium transition"
           >
             <i class="fa-regular fa-clipboard mr-1"></i> Paste
           </button>
         </div>
         <button
           id="fetchBtn"
-          class="px-6 py-3.5 rounded-xl bg-brand hover:bg-brandDark font-semibold text-white text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-brand/25 min-w-[140px]"
+          class="w-full sm:w-auto px-6 py-3 sm:py-3.5 rounded-xl bg-brand hover:bg-brandDark font-semibold text-white text-sm transition flex items-center justify-center gap-2 shadow-lg shadow-brand/25 min-w-[130px]"
         >
           <i class="fa-solid fa-wand-magic-sparkles"></i>
           <span>Analyze</span>
@@ -94,9 +94,9 @@
       </div>
 
       <!-- Error notification -->
-      <div id="errorAlert" class="hidden mt-4 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm flex items-start gap-3">
-        <i class="fa-solid fa-circle-exclamation mt-0.5 text-base"></i>
-        <div id="errorMessage"></div>
+      <div id="errorAlert" class="hidden mt-3 sm:mt-4 p-3 sm:p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs sm:text-sm flex items-start gap-2.5">
+        <i class="fa-solid fa-circle-exclamation mt-0.5 text-sm sm:text-base shrink-0"></i>
+        <div id="errorMessage" class="break-words"></div>
       </div>
     </div>
 
@@ -104,16 +104,16 @@
     <div id="mediaDetailsCard" class="hidden glass rounded-2xl overflow-hidden shadow-2xl transition-all duration-300">
       
       <!-- Video Metadata Header -->
-      <div class="grid grid-cols-1 md:grid-cols-12 gap-6 p-6 border-b border-darkBorder bg-black/20">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 p-4 sm:p-6 border-b border-darkBorder bg-black/20">
         <div class="md:col-span-5 relative group rounded-xl overflow-hidden shadow-md aspect-video bg-black/50">
           <img id="mediaThumbnail" src="" alt="Thumbnail" class="w-full h-full object-cover">
-          <div id="mediaDuration" class="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/80 font-mono text-xs text-white"></div>
+          <div id="mediaDuration" class="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/80 font-mono text-[11px] sm:text-xs text-white"></div>
         </div>
         <div class="md:col-span-7 flex flex-col justify-between">
           <div>
-            <h3 id="mediaTitle" class="text-lg md:text-xl font-bold text-white leading-snug line-clamp-2 mb-2"></h3>
-            <div class="flex flex-wrap items-center gap-3 text-xs text-gray-400 mb-3">
-              <span id="mediaUploader" class="flex items-center gap-1.5 font-medium text-gray-300">
+            <h3 id="mediaTitle" class="text-base sm:text-lg md:text-xl font-bold text-white leading-snug line-clamp-2 mb-2"></h3>
+            <div class="flex flex-wrap items-center gap-2.5 sm:gap-3 text-xs text-gray-400 mb-2">
+              <span id="mediaUploader" class="flex items-center gap-1.5 font-medium text-gray-300 truncate max-w-[200px]">
                 <i class="fa-solid fa-user-circle"></i> <span></span>
               </span>
               <span id="mediaViews" class="flex items-center gap-1.5">
@@ -121,53 +121,53 @@
               </span>
             </div>
           </div>
-          <div class="text-xs text-gray-500 truncate" id="mediaUrl"></div>
+          <div class="text-[11px] sm:text-xs text-gray-500 truncate mt-2" id="mediaUrl"></div>
         </div>
       </div>
 
       <!-- Config Options Body -->
-      <div class="p-6 space-y-6">
+      <div class="p-4 sm:p-6 space-y-5 sm:space-y-6">
 
         <!-- Mode Tabs: Video vs Audio vs Advanced -->
-        <div class="flex border-b border-darkBorder space-x-6 text-sm font-semibold">
-          <button id="tabVideo" class="tab-btn pb-3 text-brand border-b-2 border-brand flex items-center gap-2">
+        <div class="flex border-b border-darkBorder space-x-4 sm:space-x-6 text-xs sm:text-sm font-semibold overflow-x-auto">
+          <button id="tabVideo" class="tab-btn pb-2.5 sm:pb-3 text-brand border-b-2 border-brand flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
             <i class="fa-solid fa-video"></i> Video (Merged)
           </button>
-          <button id="tabAudio" class="tab-btn pb-3 text-gray-400 hover:text-white border-b-2 border-transparent flex items-center gap-2">
+          <button id="tabAudio" class="tab-btn pb-2.5 sm:pb-3 text-gray-400 hover:text-white border-b-2 border-transparent flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
             <i class="fa-solid fa-music"></i> Audio Only
           </button>
-          <button id="tabAdvanced" class="tab-btn pb-3 text-gray-400 hover:text-white border-b-2 border-transparent flex items-center gap-2">
+          <button id="tabAdvanced" class="tab-btn pb-2.5 sm:pb-3 text-gray-400 hover:text-white border-b-2 border-transparent flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
             <i class="fa-solid fa-sliders"></i> Advanced Format
           </button>
         </div>
 
         <!-- 1. Video Options -->
-        <div id="videoOptionsPanel" class="space-y-4">
+        <div id="videoOptionsPanel" class="space-y-3.5 sm:space-y-4">
           <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider">Select Video Quality (Merged with Best Audio)</label>
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-            <label class="preset-card cursor-pointer p-3.5 rounded-xl border border-brand bg-brand/10 text-white flex flex-col justify-between">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">
+            <label class="preset-card cursor-pointer p-3 sm:p-3.5 rounded-xl border border-brand bg-brand/10 text-white flex flex-col justify-between transition">
               <input type="radio" name="videoPreset" value="bestvideo*+bestaudio/best" checked class="hidden">
               <span class="font-bold text-sm">Best Available</span>
               <span class="text-xs text-gray-400">Max 4K / 8K HDR 60fps</span>
             </label>
-            <label class="preset-card cursor-pointer p-3.5 rounded-xl border border-darkBorder bg-darkCard hover:border-gray-500 text-gray-300 flex flex-col justify-between">
+            <label class="preset-card cursor-pointer p-3 sm:p-3.5 rounded-xl border border-darkBorder bg-darkCard hover:border-gray-500 text-gray-300 flex flex-col justify-between transition">
               <input type="radio" name="videoPreset" value="bestvideo[height<=1080]+bestaudio/best[height<=1080]" class="hidden">
               <span class="font-bold text-sm">1080p Full HD</span>
               <span class="text-xs text-gray-400">High Definition</span>
             </label>
-            <label class="preset-card cursor-pointer p-3.5 rounded-xl border border-darkBorder bg-darkCard hover:border-gray-500 text-gray-300 flex flex-col justify-between">
+            <label class="preset-card cursor-pointer p-3 sm:p-3.5 rounded-xl border border-darkBorder bg-darkCard hover:border-gray-500 text-gray-300 flex flex-col justify-between transition">
               <input type="radio" name="videoPreset" value="bestvideo[height<=720]+bestaudio/best[height<=720]" class="hidden">
               <span class="font-bold text-sm">720p HD</span>
               <span class="text-xs text-gray-400">Standard HD</span>
             </label>
-            <label class="preset-card cursor-pointer p-3.5 rounded-xl border border-darkBorder bg-darkCard hover:border-gray-500 text-gray-300 flex flex-col justify-between">
+            <label class="preset-card cursor-pointer p-3 sm:p-3.5 rounded-xl border border-darkBorder bg-darkCard hover:border-gray-500 text-gray-300 flex flex-col justify-between transition">
               <input type="radio" name="videoPreset" value="bestvideo[height<=480]+bestaudio/best[height<=480]" class="hidden">
               <span class="font-bold text-sm">480p SD</span>
               <span class="text-xs text-gray-400">Compact Size</span>
             </label>
           </div>
 
-          <div class="flex items-center gap-4 pt-2">
+          <div class="flex flex-wrap items-center gap-3 pt-1 sm:pt-2">
             <span class="text-xs font-semibold text-gray-400">Output Container:</span>
             <div class="flex gap-2">
               <button type="button" class="container-btn px-3 py-1 rounded-lg text-xs font-medium border border-brand bg-brand/10 text-brand" data-val="mp4">MP4</button>
@@ -179,10 +179,10 @@
 
         <!-- 2. Audio Options -->
         <div id="audioOptionsPanel" class="hidden space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">Audio Format</label>
-              <div class="flex gap-2">
+              <div class="flex flex-wrap gap-2">
                 <button type="button" class="audio-fmt-btn px-3 py-2 rounded-lg text-xs font-bold border border-brand bg-brand/10 text-brand" data-fmt="mp3">MP3</button>
                 <button type="button" class="audio-fmt-btn px-3 py-2 rounded-lg text-xs font-bold border border-darkBorder bg-darkCard text-gray-300" data-fmt="m4a">M4A</button>
                 <button type="button" class="audio-fmt-btn px-3 py-2 rounded-lg text-xs font-bold border border-darkBorder bg-darkCard text-gray-300" data-fmt="flac">FLAC</button>
@@ -192,7 +192,7 @@
             </div>
             <div>
               <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">Audio Quality (Bitrate)</label>
-              <div class="flex gap-2">
+              <div class="flex flex-wrap gap-2">
                 <button type="button" class="audio-q-btn px-3 py-2 rounded-lg text-xs font-bold border border-brand bg-brand/10 text-brand" data-q="320">320 kbps</button>
                 <button type="button" class="audio-q-btn px-3 py-2 rounded-lg text-xs font-bold border border-darkBorder bg-darkCard text-gray-300" data-q="256">256 kbps</button>
                 <button type="button" class="audio-q-btn px-3 py-2 rounded-lg text-xs font-bold border border-darkBorder bg-darkCard text-gray-300" data-q="192">192 kbps</button>
@@ -210,49 +210,51 @@
             type="text"
             value="bestvideo*+bestaudio/best"
             placeholder="e.g. bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4] / bv*+ba/b"
-            class="w-full px-4 py-2.5 rounded-xl bg-darkCard border border-darkBorder font-mono text-sm text-gray-200 focus:border-brand focus:outline-none"
+            class="w-full px-3.5 py-2.5 rounded-xl bg-darkCard border border-darkBorder font-mono text-xs sm:text-sm text-gray-200 focus:border-brand focus:outline-none"
           />
-          <div class="max-h-48 overflow-y-auto border border-darkBorder rounded-xl p-3 bg-black/40 text-xs font-mono" id="rawFormatsList"></div>
+          <div class="max-h-44 overflow-y-auto border border-darkBorder rounded-xl p-3 bg-black/40 text-[11px] sm:text-xs font-mono" id="rawFormatsList"></div>
         </div>
 
         <!-- Post-Processing Features -->
         <div class="pt-4 border-t border-darkBorder space-y-3">
           <label class="block text-xs font-semibold text-gray-300 uppercase tracking-wider">Post-Processing & Enhancements</label>
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-            <label class="flex items-center gap-2 p-3 rounded-xl bg-darkCard border border-darkBorder cursor-pointer hover:border-gray-500 transition text-xs">
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3">
+            <label class="flex items-center gap-2 p-2.5 sm:p-3 rounded-xl bg-darkCard border border-darkBorder cursor-pointer hover:border-gray-500 transition text-xs">
               <input id="checkThumbnail" type="checkbox" checked class="w-4 h-4 rounded text-brand focus:ring-0 bg-darkBg border-gray-600">
               <span class="text-gray-200">Embed Cover Art</span>
             </label>
-            <label class="flex items-center gap-2 p-3 rounded-xl bg-darkCard border border-darkBorder cursor-pointer hover:border-gray-500 transition text-xs">
+            <label class="flex items-center gap-2 p-2.5 sm:p-3 rounded-xl bg-darkCard border border-darkBorder cursor-pointer hover:border-gray-500 transition text-xs">
               <input id="checkMetadata" type="checkbox" checked class="w-4 h-4 rounded text-brand focus:ring-0 bg-darkBg border-gray-600">
               <span class="text-gray-200">Embed Chapters & Tags</span>
             </label>
-            <label class="flex items-center gap-2 p-3 rounded-xl bg-darkCard border border-darkBorder cursor-pointer hover:border-gray-500 transition text-xs">
+            <label class="flex items-center gap-2 p-2.5 sm:p-3 rounded-xl bg-darkCard border border-darkBorder cursor-pointer hover:border-gray-500 transition text-xs">
               <input id="checkSubtitles" type="checkbox" class="w-4 h-4 rounded text-brand focus:ring-0 bg-darkBg border-gray-600">
               <span class="text-gray-200">Embed Subtitles</span>
             </label>
-            <label class="flex items-center gap-2 p-3 rounded-xl bg-darkCard border border-darkBorder cursor-pointer hover:border-gray-500 transition text-xs">
+            <label class="flex items-center gap-2 p-2.5 sm:p-3 rounded-xl bg-darkCard border border-darkBorder cursor-pointer hover:border-gray-500 transition text-xs">
               <input id="checkSponsorBlock" type="checkbox" class="w-4 h-4 rounded text-brand focus:ring-0 bg-darkBg border-gray-600">
               <span class="text-gray-200">SponsorBlock (Cut sponsors)</span>
             </label>
           </div>
 
           <!-- Trimming -->
-          <div class="pt-2 flex flex-col sm:flex-row items-center gap-3 text-xs">
-            <span class="text-gray-400 font-medium whitespace-nowrap"><i class="fa-solid fa-scissors mr-1"></i> Clip Trimming (Optional):</span>
-            <input id="clipStart" type="text" placeholder="Start (e.g. 00:01:30)" class="w-full sm:w-40 px-3 py-1.5 rounded-lg bg-darkCard border border-darkBorder text-white text-xs font-mono focus:border-brand focus:outline-none">
-            <span class="text-gray-500">to</span>
-            <input id="clipEnd" type="text" placeholder="End (e.g. 00:03:00)" class="w-full sm:w-40 px-3 py-1.5 rounded-lg bg-darkCard border border-darkBorder text-white text-xs font-mono focus:border-brand focus:outline-none">
+          <div class="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 text-xs">
+            <span class="text-gray-400 font-medium whitespace-nowrap"><i class="fa-solid fa-scissors mr-1"></i> Clip Trimming:</span>
+            <div class="flex items-center gap-2 flex-1">
+              <input id="clipStart" type="text" placeholder="Start (e.g. 00:01:30)" class="w-full px-3 py-1.5 rounded-lg bg-darkCard border border-darkBorder text-white text-xs font-mono focus:border-brand focus:outline-none">
+              <span class="text-gray-500">to</span>
+              <input id="clipEnd" type="text" placeholder="End (e.g. 00:03:00)" class="w-full px-3 py-1.5 rounded-lg bg-darkCard border border-darkBorder text-white text-xs font-mono focus:border-brand focus:outline-none">
+            </div>
           </div>
         </div>
 
         <!-- Download Action Button -->
-        <div class="pt-4">
+        <div class="pt-3 sm:pt-4">
           <button
             id="startDownloadBtn"
-            class="w-full py-4 rounded-xl bg-brand hover:bg-brandDark text-white font-bold text-base transition flex items-center justify-center gap-2 shadow-xl shadow-brand/30 pulse-glow"
+            class="w-full py-3.5 sm:py-4 rounded-xl bg-brand hover:bg-brandDark text-white font-bold text-sm sm:text-base transition flex items-center justify-center gap-2 shadow-xl shadow-brand/30 pulse-glow"
           >
-            <i class="fa-solid fa-cloud-arrow-down text-lg"></i>
+            <i class="fa-solid fa-cloud-arrow-down text-base sm:text-lg"></i>
             <span>Process & Download Now</span>
           </button>
         </div>
@@ -261,37 +263,42 @@
     </div>
 
     <!-- Live Tasks & Downloads Manager -->
-    <div id="tasksSection" class="glass rounded-2xl p-6 shadow-xl space-y-4">
-      <div class="flex items-center justify-between border-b border-darkBorder pb-4">
-        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+    <div id="tasksSection" class="glass rounded-2xl p-4 sm:p-6 shadow-xl space-y-4">
+      <div class="flex items-center justify-between border-b border-darkBorder pb-3 sm:pb-4">
+        <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
           <i class="fa-solid fa-circle-notch text-brand animate-spin" id="taskSpinner" style="display:none;"></i>
           Downloads & Tasks
         </h3>
-        <button id="refreshTasksBtn" class="text-xs text-gray-400 hover:text-white transition px-2 py-1">
-          <i class="fa-solid fa-rotate-right mr-1"></i> Refresh
-        </button>
+        <div class="flex items-center gap-3">
+          <button id="clearTasksBtn" class="text-xs text-gray-400 hover:text-red-400 transition flex items-center gap-1">
+            <i class="fa-regular fa-trash-can"></i> Clear
+          </button>
+          <button id="refreshTasksBtn" class="text-xs text-gray-400 hover:text-white transition flex items-center gap-1">
+            <i class="fa-solid fa-rotate-right"></i> Refresh
+          </button>
+        </div>
       </div>
 
       <div id="tasksList" class="space-y-3">
-        <div class="text-center py-8 text-gray-500 text-sm">No active tasks. Enter a URL above to start!</div>
+        <div class="text-center py-8 text-gray-500 text-xs sm:text-sm">No active tasks in this session. Enter a URL above to start!</div>
       </div>
     </div>
 
   </main>
 
-  <footer class="py-6 text-center text-xs text-gray-500 border-t border-darkBorder mt-12">
+  <footer class="py-5 sm:py-6 text-center text-[11px] sm:text-xs text-gray-500 border-t border-darkBorder mt-8 sm:mt-12">
     Powered by <strong>yt-dlp</strong>, <strong>FFmpeg</strong> & <strong>FastAPI</strong>. Deployed on Railway.
   </footer>
 
   <script>
-    // State
+    // State - sessionTasks resets automatically whenever the page is refreshed!
     let currentMetadata = null;
     let selectedMode = 'video'; // video, audio, advanced
     let selectedVideoPreset = 'bestvideo*+bestaudio/best';
     let selectedAudioFormat = 'mp3';
     let selectedAudioQuality = '320';
     let selectedContainer = 'mp4';
-    let activeTasks = {};
+    const sessionTasks = new Set(); // Auto-cleared on refresh
 
     // Elements
     const urlInput = document.getElementById('urlInput');
@@ -302,6 +309,7 @@
     const mediaDetailsCard = document.getElementById('mediaDetailsCard');
     const tasksList = document.getElementById('tasksList');
     const taskSpinner = document.getElementById('taskSpinner');
+    const clearTasksBtn = document.getElementById('clearTasksBtn');
 
     // Clipboard Paste
     pasteBtn.addEventListener('click', async () => {
@@ -311,6 +319,12 @@
       } catch (err) {
         alert('Please allow clipboard permission or paste manually.');
       }
+    });
+
+    // Clear session tasks button
+    clearTasksBtn.addEventListener('click', () => {
+      sessionTasks.clear();
+      renderTasks([]);
     });
 
     // Tab switching
@@ -324,20 +338,20 @@
     function switchTab(mode) {
       selectedMode = mode;
       [tabVideo, tabAudio, tabAdvanced].forEach(t => {
-        t.className = 'tab-btn pb-3 text-gray-400 hover:text-white border-b-2 border-transparent flex items-center gap-2';
+        t.className = 'tab-btn pb-2.5 sm:pb-3 text-gray-400 hover:text-white border-b-2 border-transparent flex items-center gap-1.5 sm:gap-2 whitespace-nowrap';
       });
       videoOptionsPanel.classList.add('hidden');
       audioOptionsPanel.classList.add('hidden');
       advancedOptionsPanel.classList.add('hidden');
 
       if (mode === 'video') {
-        tabVideo.className = 'tab-btn pb-3 text-brand border-b-2 border-brand flex items-center gap-2';
+        tabVideo.className = 'tab-btn pb-2.5 sm:pb-3 text-brand border-b-2 border-brand flex items-center gap-1.5 sm:gap-2 whitespace-nowrap';
         videoOptionsPanel.classList.remove('hidden');
       } else if (mode === 'audio') {
-        tabAudio.className = 'tab-btn pb-3 text-brand border-b-2 border-brand flex items-center gap-2';
+        tabAudio.className = 'tab-btn pb-2.5 sm:pb-3 text-brand border-b-2 border-brand flex items-center gap-1.5 sm:gap-2 whitespace-nowrap';
         audioOptionsPanel.classList.remove('hidden');
       } else {
-        tabAdvanced.className = 'tab-btn pb-3 text-brand border-b-2 border-brand flex items-center gap-2';
+        tabAdvanced.className = 'tab-btn pb-2.5 sm:pb-3 text-brand border-b-2 border-brand flex items-center gap-1.5 sm:gap-2 whitespace-nowrap';
         advancedOptionsPanel.classList.remove('hidden');
       }
     }
@@ -350,9 +364,9 @@
     document.querySelectorAll('.preset-card').forEach(card => {
       card.addEventListener('click', () => {
         document.querySelectorAll('.preset-card').forEach(c => {
-          c.className = 'preset-card cursor-pointer p-3.5 rounded-xl border border-darkBorder bg-darkCard hover:border-gray-500 text-gray-300 flex flex-col justify-between';
+          c.className = 'preset-card cursor-pointer p-3 sm:p-3.5 rounded-xl border border-darkBorder bg-darkCard hover:border-gray-500 text-gray-300 flex flex-col justify-between transition';
         });
-        card.className = 'preset-card cursor-pointer p-3.5 rounded-xl border border-brand bg-brand/10 text-white flex flex-col justify-between';
+        card.className = 'preset-card cursor-pointer p-3 sm:p-3.5 rounded-xl border border-brand bg-brand/10 text-white flex flex-col justify-between transition';
         const input = card.querySelector('input');
         if (input) {
           input.checked = true;
@@ -487,6 +501,10 @@
 
         if (!res.ok) throw new Error('Failed to initiate download task.');
         const result = await res.json();
+        
+        // Register this task ID in the current session so it shows in the UI
+        sessionTasks.add(result.task_id);
+
         pollTasks();
         document.getElementById('tasksSection').scrollIntoView({ behavior: 'smooth' });
       } catch (err) {
@@ -494,19 +512,36 @@
       }
     });
 
-    // Poll Tasks
+    // Poll Tasks - only displays tasks registered in the current session
     async function pollTasks() {
+      if (sessionTasks.size === 0) {
+        renderTasks([]);
+        return;
+      }
       try {
         const res = await fetch('/api/tasks');
         if (!res.ok) return;
         const tasks = await res.json();
-        renderTasks(tasks.reverse());
+        // Filter tasks to only include those created in this browser session
+        const currentSessionTasks = tasks.filter(t => sessionTasks.has(t.task_id));
+        renderTasks(currentSessionTasks.reverse());
       } catch (e) {}
+    }
+
+    function cleanEta(str) {
+      if (!str) return '';
+      // If it has long decimals like 0.0m 1.1495384970731293s, clean it up
+      const match = str.match(/(\d+(?:\.\d+)?)\s*s/);
+      if (match) {
+        const sec = Math.round(parseFloat(match[1]));
+        return sec > 0 ? `${sec}s` : '1s';
+      }
+      return str;
     }
 
     function renderTasks(tasks) {
       if (!tasks || tasks.length === 0) {
-        tasksList.innerHTML = '<div class="text-center py-8 text-gray-500 text-sm">No active tasks. Enter a URL above to start!</div>';
+        tasksList.innerHTML = '<div class="text-center py-8 text-gray-500 text-xs sm:text-sm">No active tasks in this session. Enter a URL above to start!</div>';
         taskSpinner.style.display = 'none';
         return;
       }
@@ -520,31 +555,34 @@
         let downloadBtn = '';
 
         if (t.status === 'downloading') {
-          statusBadge = `<span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 font-semibold border border-blue-500/20">Downloading ${t.progress.toFixed(0)}%</span>`;
+          statusBadge = `<span class="text-[11px] sm:text-xs px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 font-semibold border border-blue-500/20 whitespace-nowrap">Downloading ${t.progress.toFixed(0)}%</span>`;
           progressBar = `<div class="w-full bg-darkBg rounded-full h-2 mt-2 overflow-hidden"><div class="bg-brand h-2 rounded-full transition-all duration-300" style="width: ${t.progress}%"></div></div>`;
         } else if (t.status === 'processing') {
-          statusBadge = `<span class="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 font-semibold border border-amber-500/20 animate-pulse">FFmpeg Merging & Post-Processing...</span>`;
+          statusBadge = `<span class="text-[11px] sm:text-xs px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 font-semibold border border-amber-500/20 animate-pulse whitespace-nowrap">FFmpeg Merging...</span>`;
           progressBar = `<div class="w-full bg-darkBg rounded-full h-2 mt-2 overflow-hidden"><div class="bg-amber-400 h-2 rounded-full w-full animate-pulse"></div></div>`;
         } else if (t.status === 'completed') {
-          statusBadge = `<span class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-semibold border border-emerald-500/20">Ready to Save</span>`;
+          statusBadge = `<span class="text-[11px] sm:text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-semibold border border-emerald-500/20 whitespace-nowrap">Ready to Save</span>`;
           progressBar = `<div class="w-full bg-emerald-500/20 rounded-full h-2 mt-2 overflow-hidden"><div class="bg-emerald-500 h-2 rounded-full w-full"></div></div>`;
-          downloadBtn = `<a href="/api/tasks/${t.task_id}/file" download class="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition shadow-lg shadow-emerald-600/30">
+          downloadBtn = `<a href="/api/tasks/${t.task_id}/file" download class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition shadow-lg shadow-emerald-600/30">
             <i class="fa-solid fa-download"></i> Save to PC
           </a>`;
         } else if (t.status === 'error') {
-          statusBadge = `<span class="text-xs px-2.5 py-0.5 rounded-full bg-red-500/10 text-red-400 font-semibold border border-red-500/20">Error</span>`;
+          statusBadge = `<span class="text-[11px] sm:text-xs px-2.5 py-0.5 rounded-full bg-red-500/10 text-red-400 font-semibold border border-red-500/20 whitespace-nowrap">Error</span>`;
           progressBar = `<div class="text-xs text-red-400 mt-1">${t.error || 'Failed'}</div>`;
         }
 
+        const etaClean = cleanEta(t.eta_str);
+        const metaLine = t.speed_str ? `${t.speed_str}${etaClean ? ' • ETA: ' + etaClean : ''}` : '';
+
         return `
-          <div class="p-4 rounded-xl bg-darkCard border border-darkBorder flex flex-col justify-between">
-            <div class="flex items-start justify-between gap-3">
-              <div class="font-semibold text-sm text-white truncate max-w-lg">${t.title || t.url}</div>
-              <div>${statusBadge}</div>
+          <div class="p-3.5 sm:p-4 rounded-xl bg-darkCard border border-darkBorder flex flex-col justify-between transition">
+            <div class="flex items-start justify-between gap-2.5">
+              <div class="font-semibold text-xs sm:text-sm text-white truncate max-w-[65%] sm:max-w-lg" title="${t.title || t.url}">${t.title || t.url}</div>
+              <div class="shrink-0">${statusBadge}</div>
             </div>
             ${progressBar}
-            <div class="flex items-center justify-between text-xs text-gray-400 mt-2">
-              <span>${t.speed_str ? t.speed_str + ' • ETA: ' + (t.eta_str || 'calc...') : ''}</span>
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs text-gray-400 mt-2.5 gap-2">
+              <span class="text-[11px] sm:text-xs">${metaLine}</span>
               ${downloadBtn}
             </div>
           </div>
@@ -554,7 +592,6 @@
 
     document.getElementById('refreshTasksBtn').onclick = pollTasks;
     setInterval(pollTasks, 2000);
-    pollTasks();
   </script>
 </body>
 </html>
