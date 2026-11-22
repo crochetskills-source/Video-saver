@@ -15,6 +15,15 @@ logging.basicConfig(level=logging.INFO)
 DOWNLOAD_DIR = os.path.abspath(os.environ.get("DOWNLOAD_DIR", "/app/downloads"))
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
+COOKIE_FILE = os.path.abspath(os.environ.get("COOKIE_FILE", "/app/cookies.txt"))
+if os.environ.get("YOUTUBE_COOKIES"):
+    try:
+        with open(COOKIE_FILE, "w") as f:
+            f.write(os.environ.get("YOUTUBE_COOKIES"))
+        logger.info("Loaded YOUTUBE_COOKIES from environment variable.")
+    except Exception as e:
+        logger.warning(f"Failed to write YOUTUBE_COOKIES: {e}")
+
 # In-memory task repository
 tasks: Dict[str, TaskStatus] = {}
 tasks_lock = threading.Lock()
@@ -58,9 +67,21 @@ def extract_info(url: str) -> VideoMetadata:
         'no_warnings': True,
         'socket_timeout': 15,
     }
+    if os.path.exists(COOKIE_FILE) and os.path.getsize(COOKIE_FILE) > 10:
+        ydl_opts['cookiefile'] = COOKIE_FILE
     
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(clean, download=False)
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(clean, download=False)
+    except Exception as e:
+        err_str = str(e)
+        if "Sign in to confirm" in err_str or "bot" in err_str or "403" in err_str:
+            logger.info("Bot challenge detected. Retrying with fallback player clients (tv, ios, mweb)...")
+            ydl_opts['extractor_args'] = {'youtube': {'player_client': ['tv', 'ios', 'mweb', 'web_creator']}}
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(clean, download=False)
+        else:
+            raise e
         
         # Flatten playlist if user passed a playlist or single video
         if 'entries' in info and info['entries']:
@@ -230,6 +251,9 @@ def execute_download(task_id: str, req: DownloadRequest):
         'quiet': False,
         'no_warnings': False,
     }
+
+    if os.path.exists(COOKIE_FILE) and os.path.getsize(COOKIE_FILE) > 10:
+        ydl_opts['cookiefile'] = COOKIE_FILE
 
     # Range trimming (clips)
     if req.clip_start or req.clip_end:
