@@ -12,7 +12,8 @@ from models import TaskStatus, VideoMetadata, FormatInfo, SubtitleTrack, Downloa
 logger = logging.getLogger("yt_dlp_server")
 logging.basicConfig(level=logging.INFO)
 
-DOWNLOAD_DIR = os.path.abspath(os.environ.get("DOWNLOAD_DIR", "/app/downloads"))
+DEFAULT_DOWNLOAD_DIR = "/app/downloads" if os.path.exists("/.dockerenv") else os.path.join(os.path.dirname(__file__), "downloads")
+DOWNLOAD_DIR = os.path.abspath(os.environ.get("DOWNLOAD_DIR", DEFAULT_DOWNLOAD_DIR))
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 COOKIE_FILE = os.path.abspath(os.environ.get("COOKIE_FILE", os.path.join(os.path.dirname(__file__), "cookies.txt")))
