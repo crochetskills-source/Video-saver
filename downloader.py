@@ -79,9 +79,21 @@ def clean_url(url: str) -> str:
         pass
     return url.strip()
 
+def get_active_cookie_file() -> Optional[str]:
+    if os.path.exists(COOKIE_FILE) and os.path.getsize(COOKIE_FILE) > 10:
+        import shutil
+        temp_cookie = f"/tmp/runtime_cookies_{os.getpid()}_{threading.get_ident()}.txt"
+        try:
+            shutil.copyfile(COOKIE_FILE, temp_cookie)
+            return temp_cookie
+        except Exception:
+            return COOKIE_FILE
+    return None
+
 def extract_info(url: str) -> VideoMetadata:
     """Extract metadata and format list without downloading."""
     clean = clean_url(url)
+    cookie_path = get_active_cookie_file()
     ydl_opts: Dict[str, Any] = {
         'skip_download': True,
         'noplaylist': True,
@@ -90,11 +102,11 @@ def extract_info(url: str) -> VideoMetadata:
         'socket_timeout': 15,
         'user_agent': USER_AGENT,
         'http_headers': {'User-Agent': USER_AGENT},
-        'extractor_args': {'youtube': {'player_client': ['visionos', 'ios', 'web_creator', 'mweb', 'web']}},
+        'extractor_args': {'youtube': {'player_client': ['web', 'visionos', 'android_creator']}},
         'js_runtimes': {'node': {}},
     }
-    if os.path.exists(COOKIE_FILE) and os.path.getsize(COOKIE_FILE) > 10:
-        ydl_opts['cookiefile'] = COOKIE_FILE
+    if cookie_path:
+        ydl_opts['cookiefile'] = cookie_path
     
     info = None
     try:
@@ -103,16 +115,19 @@ def extract_info(url: str) -> VideoMetadata:
     except Exception as e:
         err_str = str(e)
         logger.warning(f"Default extraction error: {err_str}. Trying fallback player clients...")
-        for clients in [['visionos'], ['ios'], ['tv'], ['mweb', 'web_creator'], ['android']]:
+        for clients in [['visionos'], ['android_creator'], ['ios'], ['mweb'], ['tv']]:
             try:
                 fallback_opts = dict(ydl_opts)
-                fallback_opts.pop('cookiefile', None)
+                if cookie_path:
+                    fallback_opts['cookiefile'] = cookie_path
                 fallback_opts['extractor_args'] = {'youtube': {'player_client': clients}}
                 with yt_dlp.YoutubeDL(fallback_opts) as ydl:
                     info = ydl.extract_info(clean, download=False)
                 if info:
+                    logger.info(f"Fallback extraction succeeded using player clients: {clients}")
                     break
-            except Exception:
+            except Exception as fe:
+                logger.warning(f"Fallback with {clients} failed: {fe}")
                 continue
         if not info:
             raise e
@@ -269,6 +284,7 @@ def execute_download(task_id: str, req: DownloadRequest):
             'already_have_thumbnail': False
         })
 
+    cookie_path = get_active_cookie_file()
     ydl_opts: Dict[str, Any] = {
         'outtmpl': outtmpl,
         'format': req.format_selector or 'bestvideo*+bestaudio/best',
@@ -276,7 +292,7 @@ def execute_download(task_id: str, req: DownloadRequest):
         'socket_timeout': 20,
         'user_agent': USER_AGENT,
         'http_headers': {'User-Agent': USER_AGENT},
-        'extractor_args': {'youtube': {'player_client': ['visionos', 'ios', 'web_creator', 'mweb', 'web']}},
+        'extractor_args': {'youtube': {'player_client': ['web', 'visionos', 'android_creator']}},
         'merge_output_format': req.merge_output_format if not req.audio_only else None,
         'writesubtitles': req.embed_subtitles,
         'writeautomaticsub': req.embed_subtitles,
@@ -289,8 +305,8 @@ def execute_download(task_id: str, req: DownloadRequest):
         'no_warnings': False,
     }
 
-    if os.path.exists(COOKIE_FILE) and os.path.getsize(COOKIE_FILE) > 10:
-        ydl_opts['cookiefile'] = COOKIE_FILE
+    if cookie_path:
+        ydl_opts['cookiefile'] = cookie_path
     ydl_opts['js_runtimes'] = {'node': {}}
 
     # Range trimming (clips)
