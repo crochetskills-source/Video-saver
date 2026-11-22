@@ -118,3 +118,10 @@ def delete_task(task_id: str):
             except Exception:
                 pass
         return {"status": "deleted", "task_id": task_id}
+
+if __name__ == "__main__":
+    import uvicorn
+    port = int(os.environ.get("PORT", 8000))
+    print(f"Starting server on 0.0.0.0:{port}...")
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
+
