@@ -16,6 +16,7 @@ DOWNLOAD_DIR = os.path.abspath(os.environ.get("DOWNLOAD_DIR", "/app/downloads"))
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 COOKIE_FILE = os.path.abspath(os.environ.get("COOKIE_FILE", os.path.join(os.path.dirname(__file__), "cookies.txt")))
+USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 if os.environ.get("YOUTUBE_COOKIES"):
     try:
         with open(COOKIE_FILE, "w") as f:
@@ -87,6 +88,8 @@ def extract_info(url: str) -> VideoMetadata:
         'quiet': True,
         'no_warnings': True,
         'socket_timeout': 15,
+        'user_agent': USER_AGENT,
+        'http_headers': {'User-Agent': USER_AGENT},
         'js_runtimes': {'node': {}},
     }
     if os.path.exists(COOKIE_FILE) and os.path.getsize(COOKIE_FILE) > 10:
@@ -113,71 +116,71 @@ def extract_info(url: str) -> VideoMetadata:
         if not info:
             raise e
         
-        # Flatten playlist if user passed a playlist or single video
-        if 'entries' in info and info['entries']:
-            info = info['entries'][0]
+    # Flatten playlist if user passed a playlist or single video
+    if 'entries' in info and info['entries']:
+        info = info['entries'][0]
 
-        formats_list = []
-        raw_formats = info.get('formats', [])
-        for f in raw_formats:
-            vcodec = f.get('vcodec')
-            acodec = f.get('acodec')
-            has_video = vcodec is not None and vcodec != 'none'
-            has_audio = acodec is not None and acodec != 'none'
-            
-            resolution = f.get('resolution')
-            if not resolution:
-                if f.get('width') and f.get('height'):
-                    resolution = f"{f['width']}x{f['height']}"
-                elif has_audio and not has_video:
-                    resolution = "audio only"
-                else:
-                    resolution = "unknown"
+    formats_list = []
+    raw_formats = info.get('formats', [])
+    for f in raw_formats:
+        vcodec = f.get('vcodec')
+        acodec = f.get('acodec')
+        has_video = vcodec is not None and vcodec != 'none'
+        has_audio = acodec is not None and acodec != 'none'
+        
+        resolution = f.get('resolution')
+        if not resolution:
+            if f.get('width') and f.get('height'):
+                resolution = f"{f['width']}x{f['height']}"
+            elif has_audio and not has_video:
+                resolution = "audio only"
+            else:
+                resolution = "unknown"
 
-            formats_list.append(FormatInfo(
-                format_id=str(f.get('format_id')),
-                ext=f.get('ext', ''),
-                resolution=resolution,
-                width=f.get('width'),
-                height=f.get('height'),
-                fps=f.get('fps'),
-                vcodec=vcodec,
-                acodec=acodec,
-                filesize=f.get('filesize'),
-                filesize_approx=f.get('filesize_approx'),
-                tbr=f.get('tbr'),
-                format_note=f.get('format_note'),
-                has_video=has_video,
-                has_audio=has_audio
-            ))
+        formats_list.append(FormatInfo(
+            format_id=str(f.get('format_id')),
+            ext=f.get('ext', ''),
+            resolution=resolution,
+            width=f.get('width'),
+            height=f.get('height'),
+            fps=f.get('fps'),
+            vcodec=vcodec,
+            acodec=acodec,
+            filesize=f.get('filesize'),
+            filesize_approx=f.get('filesize_approx'),
+            tbr=f.get('tbr'),
+            format_note=f.get('format_note'),
+            has_video=has_video,
+            has_audio=has_audio
+        ))
 
-        subtitles = []
-        for lang, tracks in info.get('subtitles', {}).items():
-            name = tracks[0].get('name') if tracks else lang
-            ext = tracks[0].get('ext') if tracks else 'vtt'
-            subtitles.append(SubtitleTrack(lang=lang, name=name, ext=ext))
+    subtitles = []
+    for lang, tracks in info.get('subtitles', {}).items():
+        name = tracks[0].get('name') if tracks else lang
+        ext = tracks[0].get('ext') if tracks else 'vtt'
+        subtitles.append(SubtitleTrack(lang=lang, name=name, ext=ext))
 
-        auto_caps = []
-        for lang, tracks in info.get('automatic_captions', {}).items():
-            name = tracks[0].get('name') if tracks else lang
-            ext = tracks[0].get('ext') if tracks else 'vtt'
-            auto_caps.append(SubtitleTrack(lang=lang, name=name, ext=ext))
+    auto_caps = []
+    for lang, tracks in info.get('automatic_captions', {}).items():
+        name = tracks[0].get('name') if tracks else lang
+        ext = tracks[0].get('ext') if tracks else 'vtt'
+        auto_caps.append(SubtitleTrack(lang=lang, name=name, ext=ext))
 
-        return VideoMetadata(
-            id=info.get('id', ''),
-            title=info.get('title', 'Untitled'),
-            description=info.get('description', ''),
-            uploader=info.get('uploader', ''),
-            channel=info.get('channel', ''),
-            duration=info.get('duration', 0),
-            duration_string=info.get('duration_string', ''),
-            thumbnail=info.get('thumbnail', ''),
-            view_count=info.get('view_count', 0),
-            webpage_url=info.get('webpage_url', url),
-            formats=formats_list,
-            subtitles=subtitles,
-            automatic_captions=auto_caps
-        )
+    return VideoMetadata(
+        id=info.get('id', ''),
+        title=info.get('title', 'Untitled'),
+        description=info.get('description', ''),
+        uploader=info.get('uploader', ''),
+        channel=info.get('channel', ''),
+        duration=info.get('duration', 0),
+        duration_string=info.get('duration_string', ''),
+        thumbnail=info.get('thumbnail', ''),
+        view_count=info.get('view_count', 0),
+        webpage_url=info.get('webpage_url', url),
+        formats=formats_list,
+        subtitles=subtitles,
+        automatic_captions=auto_caps
+    )
 
 def _progress_hook(d: Dict[str, Any], task_id: str):
     with tasks_lock:
@@ -270,6 +273,8 @@ def execute_download(task_id: str, req: DownloadRequest):
         'format': req.format_selector or 'bestvideo*+bestaudio/best',
         'noplaylist': True,
         'socket_timeout': 20,
+        'user_agent': USER_AGENT,
+        'http_headers': {'User-Agent': USER_AGENT},
         'merge_output_format': req.merge_output_format if not req.audio_only else None,
         'writesubtitles': req.embed_subtitles,
         'writeautomaticsub': req.embed_subtitles,
