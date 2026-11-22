@@ -37,17 +37,35 @@ def format_eta(seconds: Optional[int]) -> str:
         return f"{h}h {m}m {s}s"
     return f"{m}m {s}s"
 
+def clean_url(url: str) -> str:
+    """If user pastes a YouTube watch link with an auto-generated radio mix, strip the mix to prevent parsing 100+ videos."""
+    if "youtube.com/watch" in url or "youtu.be/" in url:
+        if "list=RD" in url or "start_radio=" in url:
+            import urllib.parse
+            parsed = urllib.parse.urlparse(url)
+            qs = urllib.parse.parse_qs(parsed.query)
+            if 'v' in qs:
+                return f"https://www.youtube.com/watch?v={qs['v'][0]}"
+    return url
+
 def extract_info(url: str) -> VideoMetadata:
     """Extract metadata and format list without downloading."""
+    clean = clean_url(url)
     ydl_opts = {
         'skip_download': True,
-        'extract_flat': False,
+        'noplaylist': True,
         'quiet': True,
         'no_warnings': True,
+        'socket_timeout': 15,
+        'extractor_args': {
+            'youtube': {
+                'player_client': ['android', 'web', 'mweb']
+            }
+        }
     }
     
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        info = ydl.extract_info(url, download=False)
+        info = ydl.extract_info(clean, download=False)
         
         # Flatten playlist if user passed a playlist or single video
         if 'entries' in info and info['entries']:
@@ -204,6 +222,13 @@ def execute_download(task_id: str, req: DownloadRequest):
     ydl_opts: Dict[str, Any] = {
         'outtmpl': outtmpl,
         'format': req.format_selector or 'bestvideo*+bestaudio/best',
+        'noplaylist': True,
+        'socket_timeout': 20,
+        'extractor_args': {
+            'youtube': {
+                'player_client': ['android', 'web', 'mweb']
+            }
+        },
         'merge_output_format': req.merge_output_format if not req.audio_only else None,
         'writesubtitles': req.embed_subtitles,
         'writeautomaticsub': req.embed_subtitles,
@@ -237,9 +262,10 @@ def execute_download(task_id: str, req: DownloadRequest):
         ydl_opts.update(req.custom_options)
 
     try:
+        target_url = clean_url(req.url)
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             # Extract info to get title first
-            info = ydl.extract_info(req.url, download=True)
+            info = ydl.extract_info(target_url, download=True)
             if 'entries' in info and info['entries']:
                 info = info['entries'][0]
 
