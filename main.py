@@ -58,9 +58,9 @@ def health_check():
     return {"status": "healthy"}
 
 @app.get("/api/cookies")
-def get_cookies_status():
+def get_cookie_status():
     has_cookies = os.path.exists(downloader.COOKIE_FILE) and os.path.getsize(downloader.COOKIE_FILE) > 10
-    return {"has_cookies": has_cookies, "bytes": os.path.getsize(downloader.COOKIE_FILE) if has_cookies else 0}
+    return {"has_cookies": has_cookies, "file": downloader.COOKIE_FILE}
 
 @app.post("/api/cookies")
 async def update_cookies(request: Request):

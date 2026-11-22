@@ -20,16 +20,16 @@ COPY requirements.txt .
 
 # Install python dependencies and ensure yt-dlp is latest
 RUN pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir -U yt-dlp
+    pip install --no-cache-dir -U yt-dlp yt-dlp-ejs
 
-# Copy application source
+# Copy application source (including cookies.txt and templates)
 COPY . .
 
 # Create directory for downloads
 RUN mkdir -p /app/downloads /app/temp
 
-# Railway exposes $PORT dynamically; default to 8000
-EXPOSE 8000
+# Railway exposes $PORT dynamically; default to 8080
+EXPOSE 8080
 
 # Start server
 CMD ["python3", "main.py"]

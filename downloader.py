@@ -5,7 +5,6 @@ import logging
 import threading
 import glob
 from typing import Dict, Any, Optional
-from fastapi import HTTPException
 import yt_dlp
 
 from models import TaskStatus, VideoMetadata, FormatInfo, SubtitleTrack, DownloadRequest
@@ -16,7 +15,7 @@ logging.basicConfig(level=logging.INFO)
 DOWNLOAD_DIR = os.path.abspath(os.environ.get("DOWNLOAD_DIR", "/app/downloads"))
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
-COOKIE_FILE = os.path.abspath(os.environ.get("COOKIE_FILE", "/app/cookies.txt"))
+COOKIE_FILE = os.path.abspath(os.environ.get("COOKIE_FILE", os.path.join(os.path.dirname(__file__), "cookies.txt")))
 if os.environ.get("YOUTUBE_COOKIES"):
     try:
         with open(COOKIE_FILE, "w") as f:
@@ -57,24 +56,38 @@ def format_eta(seconds: Any) -> str:
 
 def clean_url(url: str) -> str:
     """If user pastes a YouTube watch link with an auto-generated radio mix or playlist, strip extra playlist params."""
-    if "youtube.com/watch" in url or "youtu.be/" in url:
-        if "list=" in url or "start_radio=" in url or "index=" in url:
-            import urllib.parse
-            parsed = urllib.parse.urlparse(url)
+    if not url:
+        return url
+    try:
+        import urllib.parse
+        parsed = urllib.parse.urlparse(url.strip())
+        netloc = parsed.netloc.lower()
+        if "youtu.be" in netloc:
+            video_id = parsed.path.strip("/")
+            if video_id:
+                return f"https://www.youtube.com/watch?v={video_id}"
+        elif "youtube.com" in netloc and "/watch" in parsed.path:
             qs = urllib.parse.parse_qs(parsed.query)
             if 'v' in qs:
-                return f"https://www.youtube.com/watch?v={qs['v'][0]}"
-    return url
+                video_id = qs['v'][0]
+                list_id = qs.get('list', [None])[0]
+                if list_id and not list_id.startswith("RD"):
+                    return f"https://www.youtube.com/watch?v={video_id}&list={list_id}"
+                return f"https://www.youtube.com/watch?v={video_id}"
+    except Exception:
+        pass
+    return url.strip()
 
 def extract_info(url: str) -> VideoMetadata:
     """Extract metadata and format list without downloading."""
     clean = clean_url(url)
-    ydl_opts = {
+    ydl_opts: Dict[str, Any] = {
         'skip_download': True,
         'noplaylist': True,
         'quiet': True,
         'no_warnings': True,
         'socket_timeout': 15,
+        'js_runtimes': {'node': {}},
     }
     if os.path.exists(COOKIE_FILE) and os.path.getsize(COOKIE_FILE) > 10:
         ydl_opts['cookiefile'] = COOKIE_FILE
@@ -85,91 +98,86 @@ def extract_info(url: str) -> VideoMetadata:
             info = ydl.extract_info(clean, download=False)
     except Exception as e:
         err_str = str(e)
-        if "Sign in to confirm" in err_str or "bot" in err_str or "403" in err_str:
-            logger.info("Bot verification detected during extract_info. Retrying with fallback player clients...")
-            for clients in [['ios', 'tv'], ['tv'], ['android', 'ios']]:
-                try:
-                    fallback_opts = dict(ydl_opts)
-                    fallback_opts['extractor_args'] = {'youtube': {'player_client': clients}}
-                    with yt_dlp.YoutubeDL(fallback_opts) as ydl:
-                        info = ydl.extract_info(clean, download=False)
-                    if info:
-                        break
-                except Exception:
-                    continue
+        logger.warning(f"Default extraction error: {err_str}. Trying fallback player clients...")
+        for clients in [['tv'], ['ios', 'tv'], ['mweb', 'web_creator']]:
+            try:
+                fallback_opts = dict(ydl_opts)
+                fallback_opts.pop('cookiefile', None)
+                fallback_opts['extractor_args'] = {'youtube': {'player_client': clients}}
+                with yt_dlp.YoutubeDL(fallback_opts) as ydl:
+                    info = ydl.extract_info(clean, download=False)
+                if info:
+                    break
+            except Exception:
+                continue
         if not info:
-            if "Sign in to confirm" in err_str or "bot" in err_str or "403" in err_str:
-                raise HTTPException(
-                    status_code=403,
-                    detail="YouTube requires bot verification for this video on cloud servers. Click the 🍪 Cookies button at the top to paste your cookies.txt and bypass this permanently."
-                )
             raise e
-
-    # Flatten playlist if user passed a playlist or single video
-    if 'entries' in info and info['entries']:
-        info = info['entries'][0]
-
-    formats_list = []
-    raw_formats = info.get('formats', [])
-    for f in raw_formats:
-        vcodec = f.get('vcodec')
-        acodec = f.get('acodec')
-        has_video = vcodec is not None and vcodec != 'none'
-        has_audio = acodec is not None and acodec != 'none'
         
-        resolution = f.get('resolution')
-        if not resolution:
-            if f.get('width') and f.get('height'):
-                resolution = f"{f['width']}x{f['height']}"
-            elif has_audio and not has_video:
-                resolution = "audio only"
-            else:
-                resolution = "unknown"
+        # Flatten playlist if user passed a playlist or single video
+        if 'entries' in info and info['entries']:
+            info = info['entries'][0]
 
-        formats_list.append(FormatInfo(
-            format_id=str(f.get('format_id')),
-            ext=f.get('ext', ''),
-            resolution=resolution,
-            width=f.get('width'),
-            height=f.get('height'),
-            fps=f.get('fps'),
-            vcodec=vcodec,
-            acodec=acodec,
-            filesize=f.get('filesize'),
-            filesize_approx=f.get('filesize_approx'),
-            tbr=f.get('tbr'),
-            format_note=f.get('format_note'),
-            has_video=has_video,
-            has_audio=has_audio
-        ))
+        formats_list = []
+        raw_formats = info.get('formats', [])
+        for f in raw_formats:
+            vcodec = f.get('vcodec')
+            acodec = f.get('acodec')
+            has_video = vcodec is not None and vcodec != 'none'
+            has_audio = acodec is not None and acodec != 'none'
+            
+            resolution = f.get('resolution')
+            if not resolution:
+                if f.get('width') and f.get('height'):
+                    resolution = f"{f['width']}x{f['height']}"
+                elif has_audio and not has_video:
+                    resolution = "audio only"
+                else:
+                    resolution = "unknown"
 
-    subtitles = []
-    for lang, tracks in info.get('subtitles', {}).items():
-        name = tracks[0].get('name') if tracks else lang
-        ext = tracks[0].get('ext') if tracks else 'vtt'
-        subtitles.append(SubtitleTrack(lang=lang, name=name, ext=ext))
+            formats_list.append(FormatInfo(
+                format_id=str(f.get('format_id')),
+                ext=f.get('ext', ''),
+                resolution=resolution,
+                width=f.get('width'),
+                height=f.get('height'),
+                fps=f.get('fps'),
+                vcodec=vcodec,
+                acodec=acodec,
+                filesize=f.get('filesize'),
+                filesize_approx=f.get('filesize_approx'),
+                tbr=f.get('tbr'),
+                format_note=f.get('format_note'),
+                has_video=has_video,
+                has_audio=has_audio
+            ))
 
-    auto_caps = []
-    for lang, tracks in info.get('automatic_captions', {}).items():
-        name = tracks[0].get('name') if tracks else lang
-        ext = tracks[0].get('ext') if tracks else 'vtt'
-        auto_caps.append(SubtitleTrack(lang=lang, name=name, ext=ext))
+        subtitles = []
+        for lang, tracks in info.get('subtitles', {}).items():
+            name = tracks[0].get('name') if tracks else lang
+            ext = tracks[0].get('ext') if tracks else 'vtt'
+            subtitles.append(SubtitleTrack(lang=lang, name=name, ext=ext))
 
-    return VideoMetadata(
-        id=info.get('id', ''),
-        title=info.get('title', 'Untitled'),
-        description=info.get('description', ''),
-        uploader=info.get('uploader', ''),
-        channel=info.get('channel', ''),
-        duration=info.get('duration', 0),
-        duration_string=info.get('duration_string', ''),
-        thumbnail=info.get('thumbnail', ''),
-        view_count=info.get('view_count', 0),
-        webpage_url=info.get('webpage_url', url),
-        formats=formats_list,
-        subtitles=subtitles,
-        automatic_captions=auto_caps
-    )
+        auto_caps = []
+        for lang, tracks in info.get('automatic_captions', {}).items():
+            name = tracks[0].get('name') if tracks else lang
+            ext = tracks[0].get('ext') if tracks else 'vtt'
+            auto_caps.append(SubtitleTrack(lang=lang, name=name, ext=ext))
+
+        return VideoMetadata(
+            id=info.get('id', ''),
+            title=info.get('title', 'Untitled'),
+            description=info.get('description', ''),
+            uploader=info.get('uploader', ''),
+            channel=info.get('channel', ''),
+            duration=info.get('duration', 0),
+            duration_string=info.get('duration_string', ''),
+            thumbnail=info.get('thumbnail', ''),
+            view_count=info.get('view_count', 0),
+            webpage_url=info.get('webpage_url', url),
+            formats=formats_list,
+            subtitles=subtitles,
+            automatic_captions=auto_caps
+        )
 
 def _progress_hook(d: Dict[str, Any], task_id: str):
     with tasks_lock:
@@ -276,6 +284,7 @@ def execute_download(task_id: str, req: DownloadRequest):
 
     if os.path.exists(COOKIE_FILE) and os.path.getsize(COOKIE_FILE) > 10:
         ydl_opts['cookiefile'] = COOKIE_FILE
+    ydl_opts['js_runtimes'] = {'node': {}}
 
     # Range trimming (clips)
     if req.clip_start or req.clip_end:
@@ -299,30 +308,16 @@ def execute_download(task_id: str, req: DownloadRequest):
 
     try:
         target_url = clean_url(req.url)
-        try:
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info = ydl.extract_info(target_url, download=True)
-                if 'entries' in info and info['entries']:
-                    info = info['entries'][0]
-                with tasks_lock:
-                    task = tasks.get(task_id)
-                    if task:
-                        task.title = info.get('title', 'Media Download')
-        except Exception as dl_err:
-            err_msg = str(dl_err)
-            if "Sign in to confirm" in err_msg or "bot" in err_msg or "403" in err_msg:
-                logger.info("Bot challenge during download. Retrying with fallback player clients...")
-                ydl_opts['extractor_args'] = {'youtube': {'player_client': ['tv', 'ios', 'mweb', 'web_creator', 'android']}}
-                with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                    info = ydl.extract_info(target_url, download=True)
-                    if 'entries' in info and info['entries']:
-                        info = info['entries'][0]
-                    with tasks_lock:
-                        task = tasks.get(task_id)
-                        if task:
-                            task.title = info.get('title', 'Media Download')
-            else:
-                raise dl_err
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            # Extract info to get title first
+            info = ydl.extract_info(target_url, download=True)
+            if 'entries' in info and info['entries']:
+                info = info['entries'][0]
+
+            with tasks_lock:
+                task = tasks.get(task_id)
+                if task:
+                    task.title = info.get('title', 'Media Download')
 
         # Locate output file matching task_id prefix
         matched_files = glob.glob(os.path.join(DOWNLOAD_DIR, f"{task_id}_*"))
