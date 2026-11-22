@@ -436,7 +436,11 @@
         currentMetadata = data;
         displayMetadata(data);
       } catch (err) {
-        errorMessage.textContent = err.message;
+        if (err.message.includes('Cookies') || err.message.includes('bot')) {
+          errorMessage.innerHTML = `<div class="space-y-2"><span>${err.message}</span><div><button onclick="document.getElementById('cookieModal').classList.remove('hidden')" class="px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-black font-bold text-xs transition shadow"><i class="fa-solid fa-cookie-bite mr-1"></i> Open Cookies Settings</button></div></div>`;
+        } else {
+          errorMessage.textContent = err.message;
+        }
         errorAlert.classList.remove('hidden');
       } finally {
         fetchBtn.disabled = false;

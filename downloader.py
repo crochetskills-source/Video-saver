@@ -5,6 +5,7 @@ import logging
 import threading
 import glob
 from typing import Dict, Any, Optional
+from fastapi import HTTPException
 import yt_dlp
 
 from models import TaskStatus, VideoMetadata, FormatInfo, SubtitleTrack, DownloadRequest
@@ -55,9 +56,9 @@ def format_eta(seconds: Any) -> str:
         return ""
 
 def clean_url(url: str) -> str:
-    """If user pastes a YouTube watch link with an auto-generated radio mix, strip the mix to prevent parsing 100+ videos."""
+    """If user pastes a YouTube watch link with an auto-generated radio mix or playlist, strip extra playlist params."""
     if "youtube.com/watch" in url or "youtu.be/" in url:
-        if "list=RD" in url or "start_radio=" in url:
+        if "list=" in url or "start_radio=" in url or "index=" in url:
             import urllib.parse
             parsed = urllib.parse.urlparse(url)
             qs = urllib.parse.parse_qs(parsed.query)
@@ -84,12 +85,11 @@ def extract_info(url: str) -> VideoMetadata:
     except Exception as e:
         err_str = str(e)
         if "Sign in to confirm" in err_str or "bot" in err_str or "403" in err_str:
-            logger.info("Bot challenge detected. Retrying with fallback player clients (tv, ios, mweb, android)...")
-            ydl_opts['extractor_args'] = {'youtube': {'player_client': ['tv', 'ios', 'mweb', 'web_creator', 'android']}}
-            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-                info = ydl.extract_info(clean, download=False)
-        else:
-            raise e
+            raise HTTPException(
+                status_code=403,
+                detail="YouTube requires bot verification for this video on cloud servers. Click the 🍪 Cookies button at the top to paste your cookies.txt and bypass this permanently."
+            )
+        raise e
         
         # Flatten playlist if user passed a playlist or single video
         if 'entries' in info and info['entries']:
