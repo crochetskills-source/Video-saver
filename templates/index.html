@@ -287,6 +287,7 @@
     // State
     let currentMetadata = null;
     let selectedMode = 'video'; // video, audio, advanced
+    let selectedVideoPreset = 'bestvideo*+bestaudio/best';
     let selectedAudioFormat = 'mp3';
     let selectedAudioQuality = '320';
     let selectedContainer = 'mp4';
@@ -352,7 +353,11 @@
           c.className = 'preset-card cursor-pointer p-3.5 rounded-xl border border-darkBorder bg-darkCard hover:border-gray-500 text-gray-300 flex flex-col justify-between';
         });
         card.className = 'preset-card cursor-pointer p-3.5 rounded-xl border border-brand bg-brand/10 text-white flex flex-col justify-between';
-        card.querySelector('input').checked = true;
+        const input = card.querySelector('input');
+        if (input) {
+          input.checked = true;
+          selectedVideoPreset = input.value;
+        }
       });
     });
 
@@ -451,8 +456,7 @@
       const isAudio = selectedMode === 'audio';
       let formatSelector = 'bestvideo*+bestaudio/best';
       if (selectedMode === 'video') {
-        const checkedPreset = document.querySelector('input[name="videoPreset"]:checked');
-        formatSelector = checkedPreset ? checkedPreset.value : 'bestvideo*+bestaudio/best';
+        formatSelector = selectedVideoPreset || 'bestvideo*+bestaudio/best';
       } else if (selectedMode === 'audio') {
         formatSelector = 'bestaudio/best';
       } else {

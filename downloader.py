@@ -57,11 +57,6 @@ def extract_info(url: str) -> VideoMetadata:
         'quiet': True,
         'no_warnings': True,
         'socket_timeout': 15,
-        'extractor_args': {
-            'youtube': {
-                'player_client': ['android', 'web', 'mweb']
-            }
-        }
     }
     
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -224,11 +219,6 @@ def execute_download(task_id: str, req: DownloadRequest):
         'format': req.format_selector or 'bestvideo*+bestaudio/best',
         'noplaylist': True,
         'socket_timeout': 20,
-        'extractor_args': {
-            'youtube': {
-                'player_client': ['android', 'web', 'mweb']
-            }
-        },
         'merge_output_format': req.merge_output_format if not req.audio_only else None,
         'writesubtitles': req.embed_subtitles,
         'writeautomaticsub': req.embed_subtitles,
