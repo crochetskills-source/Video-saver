@@ -94,43 +94,48 @@ def extract_info(url: str) -> VideoMetadata:
     """Extract metadata and format list without downloading."""
     clean = clean_url(url)
     cookie_path = get_active_cookie_file()
-    ydl_opts: Dict[str, Any] = {
-        'skip_download': True,
-        'noplaylist': True,
-        'quiet': True,
-        'no_warnings': True,
-        'socket_timeout': 15,
-        'user_agent': USER_AGENT,
-        'http_headers': {'User-Agent': USER_AGENT},
-        'extractor_args': {'youtube': {'player_client': ['web', 'visionos', 'android_creator']}},
-        'js_runtimes': {'node': {}},
-    }
-    if cookie_path:
-        ydl_opts['cookiefile'] = cookie_path
-    
+
+    client_attempts = [
+        # (clients, use_cookies, use_custom_ua)
+        (['visionos'], False, False),
+        (['visionos'], True, True),
+        (['android_creator'], False, False),
+        (['web', 'android_creator'], True, True),
+        (['ios_music'], False, False),
+        (['mweb'], False, False),
+    ]
+
     info = None
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(clean, download=False)
-    except Exception as e:
-        err_str = str(e)
-        logger.warning(f"Default extraction error: {err_str}. Trying fallback player clients...")
-        for clients in [['visionos'], ['android_creator'], ['ios'], ['mweb'], ['tv']]:
-            try:
-                fallback_opts = dict(ydl_opts)
-                if cookie_path:
-                    fallback_opts['cookiefile'] = cookie_path
-                fallback_opts['extractor_args'] = {'youtube': {'player_client': clients}}
-                with yt_dlp.YoutubeDL(fallback_opts) as ydl:
-                    info = ydl.extract_info(clean, download=False)
-                if info:
-                    logger.info(f"Fallback extraction succeeded using player clients: {clients}")
-                    break
-            except Exception as fe:
-                logger.warning(f"Fallback with {clients} failed: {fe}")
-                continue
-        if not info:
-            raise e
+    last_err = None
+    for clients, use_cookie, use_ua in client_attempts:
+        try:
+            ydl_opts: Dict[str, Any] = {
+                'skip_download': True,
+                'noplaylist': True,
+                'quiet': True,
+                'no_warnings': True,
+                'socket_timeout': 15,
+                'extractor_args': {'youtube': {'player_client': clients}},
+                'js_runtimes': {'node': {}},
+            }
+            if use_cookie and cookie_path:
+                ydl_opts['cookiefile'] = cookie_path
+            if use_ua:
+                ydl_opts['user_agent'] = USER_AGENT
+                ydl_opts['http_headers'] = {'User-Agent': USER_AGENT}
+
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(clean, download=False)
+            if info and info.get('formats'):
+                logger.info(f"Extraction succeeded using client {clients} (cookies={use_cookie})")
+                break
+        except Exception as e:
+            last_err = e
+            logger.warning(f"Client {clients} (cookies={use_cookie}) attempt failed: {e}")
+            continue
+
+    if not info:
+        raise last_err or Exception("Failed to extract video info with all available player clients.")
         
     # Flatten playlist if user passed a playlist or single video
     if 'entries' in info and info['entries']:
@@ -292,7 +297,7 @@ def execute_download(task_id: str, req: DownloadRequest):
         'socket_timeout': 20,
         'user_agent': USER_AGENT,
         'http_headers': {'User-Agent': USER_AGENT},
-        'extractor_args': {'youtube': {'player_client': ['web', 'visionos', 'android_creator']}},
+        'extractor_args': {'youtube': {'player_client': ['visionos']}},
         'merge_output_format': req.merge_output_format if not req.audio_only else None,
         'writesubtitles': req.embed_subtitles,
         'writeautomaticsub': req.embed_subtitles,
