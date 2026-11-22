@@ -5,3 +5,5 @@ temp/
 .git
 .gitignore
 .env
+android/
+
