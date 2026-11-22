@@ -79,83 +79,97 @@ def extract_info(url: str) -> VideoMetadata:
     if os.path.exists(COOKIE_FILE) and os.path.getsize(COOKIE_FILE) > 10:
         ydl_opts['cookiefile'] = COOKIE_FILE
     
+    info = None
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(clean, download=False)
     except Exception as e:
         err_str = str(e)
         if "Sign in to confirm" in err_str or "bot" in err_str or "403" in err_str:
-            raise HTTPException(
-                status_code=403,
-                detail="YouTube requires bot verification for this video on cloud servers. Click the 🍪 Cookies button at the top to paste your cookies.txt and bypass this permanently."
-            )
-        raise e
+            logger.info("Bot verification detected during extract_info. Retrying with fallback player clients...")
+            for clients in [['ios', 'tv'], ['tv'], ['android', 'ios']]:
+                try:
+                    fallback_opts = dict(ydl_opts)
+                    fallback_opts['extractor_args'] = {'youtube': {'player_client': clients}}
+                    with yt_dlp.YoutubeDL(fallback_opts) as ydl:
+                        info = ydl.extract_info(clean, download=False)
+                    if info:
+                        break
+                except Exception:
+                    continue
+        if not info:
+            if "Sign in to confirm" in err_str or "bot" in err_str or "403" in err_str:
+                raise HTTPException(
+                    status_code=403,
+                    detail="YouTube requires bot verification for this video on cloud servers. Click the 🍪 Cookies button at the top to paste your cookies.txt and bypass this permanently."
+                )
+            raise e
+
+    # Flatten playlist if user passed a playlist or single video
+    if 'entries' in info and info['entries']:
+        info = info['entries'][0]
+
+    formats_list = []
+    raw_formats = info.get('formats', [])
+    for f in raw_formats:
+        vcodec = f.get('vcodec')
+        acodec = f.get('acodec')
+        has_video = vcodec is not None and vcodec != 'none'
+        has_audio = acodec is not None and acodec != 'none'
         
-        # Flatten playlist if user passed a playlist or single video
-        if 'entries' in info and info['entries']:
-            info = info['entries'][0]
+        resolution = f.get('resolution')
+        if not resolution:
+            if f.get('width') and f.get('height'):
+                resolution = f"{f['width']}x{f['height']}"
+            elif has_audio and not has_video:
+                resolution = "audio only"
+            else:
+                resolution = "unknown"
 
-        formats_list = []
-        raw_formats = info.get('formats', [])
-        for f in raw_formats:
-            vcodec = f.get('vcodec')
-            acodec = f.get('acodec')
-            has_video = vcodec is not None and vcodec != 'none'
-            has_audio = acodec is not None and acodec != 'none'
-            
-            resolution = f.get('resolution')
-            if not resolution:
-                if f.get('width') and f.get('height'):
-                    resolution = f"{f['width']}x{f['height']}"
-                elif has_audio and not has_video:
-                    resolution = "audio only"
-                else:
-                    resolution = "unknown"
+        formats_list.append(FormatInfo(
+            format_id=str(f.get('format_id')),
+            ext=f.get('ext', ''),
+            resolution=resolution,
+            width=f.get('width'),
+            height=f.get('height'),
+            fps=f.get('fps'),
+            vcodec=vcodec,
+            acodec=acodec,
+            filesize=f.get('filesize'),
+            filesize_approx=f.get('filesize_approx'),
+            tbr=f.get('tbr'),
+            format_note=f.get('format_note'),
+            has_video=has_video,
+            has_audio=has_audio
+        ))
 
-            formats_list.append(FormatInfo(
-                format_id=str(f.get('format_id')),
-                ext=f.get('ext', ''),
-                resolution=resolution,
-                width=f.get('width'),
-                height=f.get('height'),
-                fps=f.get('fps'),
-                vcodec=vcodec,
-                acodec=acodec,
-                filesize=f.get('filesize'),
-                filesize_approx=f.get('filesize_approx'),
-                tbr=f.get('tbr'),
-                format_note=f.get('format_note'),
-                has_video=has_video,
-                has_audio=has_audio
-            ))
+    subtitles = []
+    for lang, tracks in info.get('subtitles', {}).items():
+        name = tracks[0].get('name') if tracks else lang
+        ext = tracks[0].get('ext') if tracks else 'vtt'
+        subtitles.append(SubtitleTrack(lang=lang, name=name, ext=ext))
 
-        subtitles = []
-        for lang, tracks in info.get('subtitles', {}).items():
-            name = tracks[0].get('name') if tracks else lang
-            ext = tracks[0].get('ext') if tracks else 'vtt'
-            subtitles.append(SubtitleTrack(lang=lang, name=name, ext=ext))
+    auto_caps = []
+    for lang, tracks in info.get('automatic_captions', {}).items():
+        name = tracks[0].get('name') if tracks else lang
+        ext = tracks[0].get('ext') if tracks else 'vtt'
+        auto_caps.append(SubtitleTrack(lang=lang, name=name, ext=ext))
 
-        auto_caps = []
-        for lang, tracks in info.get('automatic_captions', {}).items():
-            name = tracks[0].get('name') if tracks else lang
-            ext = tracks[0].get('ext') if tracks else 'vtt'
-            auto_caps.append(SubtitleTrack(lang=lang, name=name, ext=ext))
-
-        return VideoMetadata(
-            id=info.get('id', ''),
-            title=info.get('title', 'Untitled'),
-            description=info.get('description', ''),
-            uploader=info.get('uploader', ''),
-            channel=info.get('channel', ''),
-            duration=info.get('duration', 0),
-            duration_string=info.get('duration_string', ''),
-            thumbnail=info.get('thumbnail', ''),
-            view_count=info.get('view_count', 0),
-            webpage_url=info.get('webpage_url', url),
-            formats=formats_list,
-            subtitles=subtitles,
-            automatic_captions=auto_caps
-        )
+    return VideoMetadata(
+        id=info.get('id', ''),
+        title=info.get('title', 'Untitled'),
+        description=info.get('description', ''),
+        uploader=info.get('uploader', ''),
+        channel=info.get('channel', ''),
+        duration=info.get('duration', 0),
+        duration_string=info.get('duration_string', ''),
+        thumbnail=info.get('thumbnail', ''),
+        view_count=info.get('view_count', 0),
+        webpage_url=info.get('webpage_url', url),
+        formats=formats_list,
+        subtitles=subtitles,
+        automatic_captions=auto_caps
+    )
 
 def _progress_hook(d: Dict[str, Any], task_id: str):
     with tasks_lock:

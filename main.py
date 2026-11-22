@@ -57,6 +57,11 @@ def web_interface():
 def health_check():
     return {"status": "healthy"}
 
+@app.get("/api/cookies")
+def get_cookies_status():
+    has_cookies = os.path.exists(downloader.COOKIE_FILE) and os.path.getsize(downloader.COOKIE_FILE) > 10
+    return {"has_cookies": has_cookies, "bytes": os.path.getsize(downloader.COOKIE_FILE) if has_cookies else 0}
+
 @app.post("/api/cookies")
 async def update_cookies(request: Request):
     """Save YouTube cookies to bypass cloud datacenter bot challenges."""

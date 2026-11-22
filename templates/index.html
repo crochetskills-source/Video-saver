@@ -47,8 +47,9 @@
         </div>
       </div>
       <div class="flex items-center space-x-2 sm:space-x-3">
-        <button id="cookieModalBtn" class="px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-[11px] sm:text-xs text-gray-300 font-medium transition flex items-center gap-1 border border-darkBorder">
-          <i class="fa-solid fa-cookie-bite text-amber-400"></i> Cookies
+        <button id="cookieModalBtn" onclick="openCookieModal()" class="px-2.5 py-1 rounded-lg bg-gray-800 hover:bg-gray-700 text-[11px] sm:text-xs text-gray-300 font-medium transition flex items-center gap-1.5 border border-darkBorder">
+          <i class="fa-solid fa-cookie-bite text-amber-400"></i>
+          <span id="cookieBtnText">Cookies</span>
         </button>
         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 whitespace-nowrap">
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -436,8 +437,8 @@
         currentMetadata = data;
         displayMetadata(data);
       } catch (err) {
-        if (err.message.includes('Cookies') || err.message.includes('bot')) {
-          errorMessage.innerHTML = `<div class="space-y-2"><span>${err.message}</span><div><button onclick="document.getElementById('cookieModal').classList.remove('hidden')" class="px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-black font-bold text-xs transition shadow"><i class="fa-solid fa-cookie-bite mr-1"></i> Open Cookies Settings</button></div></div>`;
+        if (err.message.includes('Cookies') || err.message.includes('bot') || err.message.includes('verification') || err.message.includes('403')) {
+          errorMessage.innerHTML = `<div class="space-y-2"><span>${err.message}</span><div><button type="button" onclick="openCookieModal()" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-black font-bold text-xs transition shadow inline-flex items-center gap-1.5 mt-1 cursor-pointer"><i class="fa-solid fa-cookie-bite"></i> Open Cookies Settings</button></div></div>`;
         } else {
           errorMessage.textContent = err.message;
         }
@@ -597,63 +598,15 @@
       }).join('');
     }
 
-    document.getElementById('refreshTasksBtn').onclick = pollTasks;
-    setInterval(pollTasks, 2000);
-
-    // Cookie Modal Logic
-    const cookieModal = document.getElementById('cookieModal');
-    const cookieModalBtn = document.getElementById('cookieModalBtn');
-    const closeCookieModal = document.getElementById('closeCookieModal');
-    const saveCookieBtn = document.getElementById('saveCookieBtn');
-    const cookieInput = document.getElementById('cookieInput');
-    const cookieFileInput = document.getElementById('cookieFileInput');
-    const cookieStatus = document.getElementById('cookieStatus');
-
-    cookieModalBtn.onclick = () => { cookieModal.classList.remove('hidden'); };
-    closeCookieModal.onclick = () => { cookieModal.classList.add('hidden'); };
-
-    cookieFileInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (event) => { cookieInput.value = event.target.result; };
-      reader.readAsText(file);
-    });
-
-    saveCookieBtn.addEventListener('click', async () => {
-      const text = cookieInput.value.trim();
-      if (!text) return alert('Please paste cookies or upload a cookies.txt file.');
-
-      saveCookieBtn.disabled = true;
-      saveCookieBtn.textContent = 'Saving...';
-      try {
-        const res = await fetch('/api/cookies', {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
-          body: text
-        });
-        if (!res.ok) throw new Error('Failed to save cookies.');
-        cookieStatus.textContent = 'Cookies saved successfully! Cloud bot detection bypassed.';
-        cookieStatus.classList.remove('hidden');
-        setTimeout(() => { cookieModal.classList.add('hidden'); }, 1500);
-      } catch (err) {
-        alert(err.message);
-      } finally {
-        saveCookieBtn.disabled = false;
-        saveCookieBtn.textContent = 'Save Cookies to Server';
-      }
-    });
-  </script>
-
   <!-- Cookie Modal -->
-  <div id="cookieModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+  <div id="cookieModal" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/75 backdrop-blur-sm" onclick="if(event.target === this) closeCookieModal()">
     <div class="glass max-w-lg w-full rounded-2xl p-6 shadow-2xl border border-darkBorder relative">
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
           <i class="fa-solid fa-cookie-bite text-amber-400"></i>
           YouTube Cookies (Bot Bypass)
         </h3>
-        <button id="closeCookieModal" class="text-gray-400 hover:text-white text-lg">
+        <button id="closeCookieModalBtn" type="button" onclick="closeCookieModal()" class="text-gray-400 hover:text-white text-lg p-1 transition cursor-pointer">
           <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
@@ -664,16 +617,100 @@
       <textarea id="cookieInput" rows="6" placeholder="# Netscape HTTP Cookie File&#10;.youtube.com TRUE / FALSE 1789000000 ..." class="w-full p-3 rounded-xl bg-darkCard border border-darkBorder text-white text-xs font-mono focus:border-brand focus:outline-none mb-3"></textarea>
       
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <label class="cursor-pointer inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-xs text-gray-300 font-medium transition">
+        <label class="cursor-pointer inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-xs text-gray-300 font-medium transition border border-darkBorder">
           <i class="fa-solid fa-file-arrow-up"></i> Upload cookies.txt
           <input type="file" id="cookieFileInput" accept=".txt" class="hidden">
         </label>
-        <button id="saveCookieBtn" class="px-5 py-2 rounded-xl bg-brand hover:bg-brandDark text-white font-bold text-xs transition shadow-lg shadow-brand/25">
+        <button id="saveCookieBtn" type="button" class="px-5 py-2 rounded-xl bg-brand hover:bg-brandDark text-white font-bold text-xs transition shadow-lg shadow-brand/25 cursor-pointer">
           Save Cookies to Server
         </button>
       </div>
       <div id="cookieStatus" class="hidden mt-3 p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 text-xs font-medium text-center border border-emerald-500/20"></div>
     </div>
   </div>
+
+  <script>
+    window.openCookieModal = function() {
+      const modal = document.getElementById('cookieModal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+      }
+    };
+
+    window.closeCookieModal = function() {
+      const modal = document.getElementById('cookieModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+    };
+
+    async function checkCookieStatus() {
+      try {
+        const res = await fetch('/api/cookies');
+        if (res.ok) {
+          const data = await res.json();
+          const cookieBtnText = document.getElementById('cookieBtnText');
+          if (data.has_cookies && cookieBtnText) {
+            cookieBtnText.innerHTML = 'Cookies <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 ml-1" title="Cookies active"></span>';
+          }
+        }
+      } catch(e) {}
+    }
+    checkCookieStatus();
+
+    document.getElementById('cookieModalBtn')?.addEventListener('click', openCookieModal);
+    document.getElementById('closeCookieModalBtn')?.addEventListener('click', closeCookieModal);
+
+    const cookieFileInput = document.getElementById('cookieFileInput');
+    if (cookieFileInput) {
+      cookieFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const cookieInput = document.getElementById('cookieInput');
+          if (cookieInput) cookieInput.value = event.target.result;
+        };
+        reader.readAsText(file);
+      });
+    }
+
+    const saveCookieBtn = document.getElementById('saveCookieBtn');
+    if (saveCookieBtn) {
+      saveCookieBtn.addEventListener('click', async () => {
+        const cookieInput = document.getElementById('cookieInput');
+        const text = cookieInput ? cookieInput.value.trim() : '';
+        if (!text) return alert('Please paste cookies or upload a cookies.txt file.');
+
+        saveCookieBtn.disabled = true;
+        saveCookieBtn.textContent = 'Saving...';
+        try {
+          const res = await fetch('/api/cookies', {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: text
+          });
+          if (!res.ok) throw new Error('Failed to save cookies.');
+          const cookieStatus = document.getElementById('cookieStatus');
+          if (cookieStatus) {
+            cookieStatus.textContent = '✓ Cookies saved successfully! Cloud bot detection bypassed.';
+            cookieStatus.classList.remove('hidden');
+          }
+          checkCookieStatus();
+          setTimeout(() => { closeCookieModal(); }, 1200);
+        } catch (err) {
+          alert(err.message);
+        } finally {
+          saveCookieBtn.disabled = false;
+          saveCookieBtn.textContent = 'Save Cookies to Server';
+        }
+      });
+    }
+
+    document.getElementById('refreshTasksBtn').onclick = pollTasks;
+    setInterval(pollTasks, 2000);
+  </script>
 </body>
 </html>
