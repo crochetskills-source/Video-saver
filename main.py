@@ -1,16 +1,16 @@
 import os
 import urllib.parse
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, HTMLResponse
 from typing import Dict, List
 
 from models import ExtractRequest, DownloadRequest, VideoMetadata, TaskStatus
 import downloader
 
 app = FastAPI(
-    title="yt-dlp Railway API Server",
-    description="Full-featured yt-dlp backend with merging, post-processing, format extraction, and file delivery for Android",
+    title="yt-dlp Railway API Server & Web UI",
+    description="Full-featured yt-dlp backend with merging, post-processing, format extraction, web UI, and file delivery",
     version="1.0.0"
 )
 
@@ -23,20 +23,35 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+TEMPLATES_DIR = os.path.join(os.path.dirname(__file__), "templates")
+INDEX_HTML = os.path.join(TEMPLATES_DIR, "index.html")
+
 @app.get("/")
-def root():
+def root(request: Request):
+    # If browser requests HTML, serve the PC Web interface
+    accept = request.headers.get("accept", "")
+    if "text/html" in accept and os.path.exists(INDEX_HTML):
+        return FileResponse(INDEX_HTML, media_type="text/html")
+
     return {
         "status": "online",
-        "service": "yt-dlp Railway API Server",
+        "service": "yt-dlp Railway API Server & Web UI",
         "version": "1.0.0",
         "features": [
             "full yt-dlp format selection",
             "video and audio merging (ffmpeg)",
             "post-processing (SponsorBlock, metadata, subtitles, thumbnail embed)",
             "audio extraction (mp3, m4a, flac, opus)",
-            "clip trimming"
+            "clip trimming",
+            "PC Web Interface"
         ]
     }
+
+@app.get("/web", response_class=HTMLResponse)
+def web_interface():
+    if os.path.exists(INDEX_HTML):
+        return FileResponse(INDEX_HTML, media_type="text/html")
+    raise HTTPException(status_code=404, detail="Web UI template not found")
 
 @app.get("/health")
 def health_check():
