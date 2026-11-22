@@ -4,13 +4,12 @@ FROM python:3.11-slim
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
 
-# Install ffmpeg, ffprobe, atomicparsley, curl, ca-certificates, and nodejs for JS runtime
+# Install ffmpeg, ffprobe, atomicparsley, curl, ca-certificates
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     atomicparsley \
     curl \
     ca-certificates \
-    nodejs \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

@@ -57,17 +57,6 @@ def web_interface():
 def health_check():
     return {"status": "healthy"}
 
-@app.post("/api/cookies")
-async def update_cookies(request: Request):
-    """Save YouTube cookies to bypass cloud datacenter bot challenges."""
-    body = await request.body()
-    cookie_text = body.decode("utf-8")
-    if not cookie_text.strip():
-        raise HTTPException(status_code=400, detail="Cookie content is empty")
-    with open(downloader.COOKIE_FILE, "w") as f:
-        f.write(cookie_text)
-    return {"status": "success", "message": "Cookies saved successfully", "bytes": len(cookie_text)}
-
 @app.post("/api/extract", response_model=VideoMetadata)
 def extract_metadata(req: ExtractRequest):
     """
