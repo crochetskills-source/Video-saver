@@ -77,7 +77,7 @@ def clean_url(url: str) -> str:
                 return f"https://www.youtube.com/watch?v={video_id}"
     except Exception:
         pass
-    return url.strip()
+``    return url.strip()
 
 def get_active_cookie_file() -> Optional[str]:
     if os.path.exists(COOKIE_FILE) and os.path.getsize(COOKIE_FILE) > 10:
@@ -96,12 +96,14 @@ def extract_info(url: str) -> VideoMetadata:
     cookie_path = get_active_cookie_file()
 
     client_attempts = [
-        # (clients, use_cookies, use_custom_ua)
+        # 1. visionos (delivers 1080p, 720p, etc.)
         (['visionos'], False, False),
         (['visionos'], True, True),
-        (['android_creator'], False, False),
-        (['web', 'android_creator'], True, True),
-        (['ios_music'], False, False),
+        # 2. android client (bulletproof against datacenter bot gates)
+        (['android', 'web'], False, False),
+        (['android'], False, False),
+        (['android'], True, True),
+        # 3. mobile web
         (['mweb'], False, False),
     ]
 
@@ -116,7 +118,6 @@ def extract_info(url: str) -> VideoMetadata:
                 'no_warnings': True,
                 'socket_timeout': 15,
                 'extractor_args': {'youtube': {'player_client': clients}},
-                'js_runtimes': {'node': {}},
             }
             if use_cookie and cookie_path:
                 ydl_opts['cookiefile'] = cookie_path
@@ -292,12 +293,12 @@ def execute_download(task_id: str, req: DownloadRequest):
     cookie_path = get_active_cookie_file()
     ydl_opts: Dict[str, Any] = {
         'outtmpl': outtmpl,
-        'format': req.format_selector or 'bestvideo*+bestaudio/best',
+        'format': req.format_selector or 'bestvideo*+bestaudio/best/18',
         'noplaylist': True,
         'socket_timeout': 20,
         'user_agent': USER_AGENT,
         'http_headers': {'User-Agent': USER_AGENT},
-        'extractor_args': {'youtube': {'player_client': ['visionos']}},
+        'extractor_args': {'youtube': {'player_client': ['android', 'visionos', 'web']}},
         'merge_output_format': req.merge_output_format if not req.audio_only else None,
         'writesubtitles': req.embed_subtitles,
         'writeautomaticsub': req.embed_subtitles,
@@ -312,7 +313,6 @@ def execute_download(task_id: str, req: DownloadRequest):
 
     if cookie_path:
         ydl_opts['cookiefile'] = cookie_path
-    ydl_opts['js_runtimes'] = {'node': {}}
 
     # Range trimming (clips)
     if req.clip_start or req.clip_end:

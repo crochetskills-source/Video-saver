@@ -4,14 +4,20 @@ FROM python:3.11-slim
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
 
-# Install ffmpeg, ffprobe, atomicparsley, curl, ca-certificates, and nodejs for JS runtime
+# Install ffmpeg, ffprobe, atomicparsley, curl, unzip, ca-certificates, and nodejs for JS runtime
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     atomicparsley \
     curl \
+    unzip \
     ca-certificates \
     nodejs \
     && rm -rf /var/lib/apt/lists/*
+
+# Install Deno (yt-dlp default recommended JavaScript runtime for challenge solving)
+ENV DENO_INSTALL="/root/.deno"
+ENV PATH="${DENO_INSTALL}/bin:${PATH}"
+RUN curl -fsSL https://deno.land/install.sh | sh
 
 WORKDIR /app
 
